@@ -1,4 +1,5 @@
-from flask import Flask, jsonify
+from flask import Flask
+import json
 import school_news as sn
 
 
@@ -10,7 +11,7 @@ def spider():
     news_detail = sn.get_news_detail(sn.get_news())
     notice_detail = sn.get_notice_detail(sn.get_notice())
 
-    return ({
+    return json.dumps({
         'news_detail': news_detail,
         'notice_detail': notice_detail,
     })
