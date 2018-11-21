@@ -1,8 +1,10 @@
 import requests
 from bs4 import BeautifulSoup
 import logging
+import time
+from redis_text import new_cache
 
-
+@new_cache()
 def get_news():
     news_url = []
     news_list = []
@@ -60,10 +62,11 @@ def get_news():
                     'origin': content['type'],
                 }
                 news_list.append(data)
+            time.sleep(2)
 
     return news_list
 
-
+@new_cache()
 def get_notice():
     notice_url = []
     notice_list = []
@@ -123,10 +126,11 @@ def get_notice():
                     'origin': content['type'],
                 }
                 notice_list.append(data)
+            time.sleep(2)
 
     return notice_list
 
-
+@new_cache()
 def get_news_detail(news_list):
     news_detail = []
     for content in news_list:
@@ -145,10 +149,11 @@ def get_news_detail(news_list):
                 'type': 'news',
             }
             news_detail.append(data)
+            time.sleep(2)
 
     return news_detail
 
-
+@new_cache()
 def get_notice_detail(notice_list):
     notice_detail = []
     for content in notice_list:
@@ -167,5 +172,17 @@ def get_notice_detail(notice_list):
                 'type': 'notice'
             }
             notice_detail.append(data)
+            time.sleep(2)
 
     return notice_detail
+
+
+if __name__ == '__main__':
+    news_list = get_news()
+    notice_list = get_notice()
+    news_detail = get_news_detail()
+    notice_detail = get_notice_detail()
+    print({
+        'news_detail': news_detail,
+        "notice_detail": notice_detail,
+    })

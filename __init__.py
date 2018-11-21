@@ -8,14 +8,7 @@ app = Flask(__name__)
 
 @app.route('/api/GetNews', methods=['GET'])
 def spider():
-    news_detail = sn.get_news_detail(sn.get_news())
-    notice_detail = sn.get_notice_detail(sn.get_notice())
-
-    return json.dumps({
-        'news_detail': news_detail,
-        'notice_detail': notice_detail,
-    })
-
+    return json.dumps({'code':'hello word'})
 
 if __name__ == '__main__':
     app.run(debug=True,port=8848)
