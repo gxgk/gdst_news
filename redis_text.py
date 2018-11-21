@@ -25,13 +25,3 @@ def new_cache():
             return data
         return wrapper
     return decorator
-
-if __name__ == '__main__':
-    a = r.get('get_news')
-    b = r.get('get_notice')
-    c = r.get('get_news_detail')
-    d = r.get('get_notice_detail')
-    print(a)
-    print(b)
-    print(c)
-    print(d)
