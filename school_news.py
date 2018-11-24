@@ -4,6 +4,7 @@ import logging
 import time
 from redis_text import new_cache
 
+
 @new_cache()
 def get_news():
     news_url = []
@@ -65,6 +66,7 @@ def get_news():
             time.sleep(2)
 
     return news_list
+
 
 @new_cache()
 def get_notice():
@@ -130,6 +132,7 @@ def get_notice():
 
     return notice_list
 
+
 @new_cache()
 def get_news_detail(news_list):
     news_detail = []
@@ -152,6 +155,7 @@ def get_news_detail(news_list):
             time.sleep(2)
 
     return news_detail
+
 
 @new_cache()
 def get_notice_detail(notice_list):
@@ -178,10 +182,8 @@ def get_notice_detail(notice_list):
 
 
 if __name__ == '__main__':
-    news_list = get_news()
-    notice_list = get_notice()
-    news_detail = get_news_detail()
-    notice_detail = get_notice_detail()
+    news_detail = get_news_detail(get_news())
+    notice_detail = get_notice_detail(get_notice())
     print({
         'news_detail': news_detail,
         "notice_detail": notice_detail,
