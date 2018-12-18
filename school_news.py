@@ -2,10 +2,9 @@ import requests
 from bs4 import BeautifulSoup
 import logging
 import time
-from redis_text import new_cache
+from decorator import  judge_list,judge_detail,new_cache
 
-
-@new_cache()
+@judge_list()
 def get_news():
     news_url = []
     news_list = []
@@ -20,25 +19,13 @@ def get_news():
     }
 
     for key in news_type:
-        # 构建URL
-        if key == 'xy':
-            # 学院爬取3页，系爬取2页
-            for n in range(1, 4):
-                url = 'http://www.gdst.cc' + news_type[key] + '?page=' + str(n)
-                data = {
-                    'url': url,
-                    'type': key,
-                }
-                news_url.append(data)
-
-        else:
-            for n in range(1, 3):
-                url = 'http://www.gdst.cc' + news_type[key] + '?page=' + str(n)
-                data = {
-                    'url': url,
-                    'type': key,
-                }
-                news_url.append(data)
+        for n in range(1, 4):
+            url = 'http://www.gdst.cc' + news_type[key] + '?page=' + str(n)
+            data = {
+                'url': url,
+                'type': key,
+            }
+            news_url.append(data)
 
     for content in news_url:
         try:
@@ -65,10 +52,12 @@ def get_news():
                 news_list.append(data)
             time.sleep(2)
 
-    return news_list
+    return {
+        'data':news_list,
+        'type':'news_list',
+    }
 
-
-@new_cache()
+@judge_list()
 def get_notice():
     notice_url = []
     notice_list = []
@@ -84,26 +73,14 @@ def get_notice():
 
     for key in notice_type:
         # 构建URL
-        if key == 'xy':
-            # 学院爬取3页，系爬取2页
-            for n in range(1, 4):
-                url = 'http://www.gdst.cc' + \
-                    notice_type[key] + '?page=' + str(n)
-                data = {
-                    'url': url,
-                    'type': key,
-                }
-                notice_url.append(data)
-
-        else:
-            for n in range(1, 3):
-                url = 'http://www.gdst.cc' + \
-                    notice_type[key] + '?page=' + str(n)
-                data = {
-                    'url': url,
-                    'type': key,
-                }
-                notice_url.append(data)
+        for n in range(1, 4):
+            url = 'http://www.gdst.cc' + \
+                notice_type[key] + '?page=' + str(n)
+            data = {
+                'url': url,
+                'type': key,
+            }
+            notice_url.append(data)
 
     for content in notice_url:
         try:
@@ -130,10 +107,13 @@ def get_notice():
                 notice_list.append(data)
             time.sleep(2)
 
-    return notice_list
+    return {
+        'data':notice_list,
+        'type':'notice_list',
+    }
 
 
-@new_cache()
+@judge_detail(get_news())
 def get_news_detail(news_list):
     news_detail = []
     for content in news_list:
@@ -149,15 +129,17 @@ def get_news_detail(news_list):
                 'title': content['title'],
                 'origin': content['origin'],
                 'html': rows,
-                'type': 'news',
             }
             news_detail.append(data)
             time.sleep(2)
 
-    return news_detail
+    return {
+        'data':news_detail,
+        'type':'news_detail',
+    }
 
 
-@new_cache()
+@judge_detail(get_notice())
 def get_notice_detail(notice_list):
     notice_detail = []
     for content in notice_list:
@@ -173,18 +155,50 @@ def get_notice_detail(notice_list):
                 'title': content['title'],
                 'origin': content['origin'],
                 'html': rows,
-                'type': 'notice'
             }
             notice_detail.append(data)
             time.sleep(2)
 
-    return notice_detail
+    return {
+        'data':notice_detail,
+        'type':'notice_detail'
+    }
 
+@new_cache()
+def data_classify(dic):
+    xy = []
+    jsjx = []
+    cjx = []
+    ysx = []
+    yyx = []
+    jdx = []
+    glx = []
+    type = dic['type']
+    list = dic['data']
+    for data in list:
+        if data['origin'] == "xy":
+            xy.append(data)
+        elif data['origin'] == "jsjx":
+            jsjx.append(data)
+        elif data["origin"] == "cjx":
+            cjx.append(data)
+        elif data["origin"] == "ysx":
+            ysx.append(data)
+        elif data["origin"] == "yyx":
+            yyx.append(data)
+        elif data['origin'] == "jdx":
+            jdx.append(data)
+        else:
+            glx.append(data)
 
-if __name__ == '__main__':
-    news_detail = get_news_detail(get_news())
-    notice_detail = get_notice_detail(get_notice())
-    print({
-        'news_detail': news_detail,
-        "notice_detail": notice_detail,
-    })
+    return {
+        'type':type,
+        'xy':xy,
+        'jsjx':jsjx,
+        'cjx':cjx,
+        'ysx':ysx,
+        'yyx':yyx,
+        'jdx':jdx,
+        'glx':glx,
+    }
+
