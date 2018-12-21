@@ -1,30 +1,25 @@
 from flask import Flask, request
 import json
 import school_news as sn
-
-
+from urllib.parse import unquote
 app = Flask(__name__)
 
 
-@app.route('/<type>/<origin>', methods=['GET'])
-def get_list_api(type, origin):
+@app.route('/news/list', methods=['GET'])
+def get_list_api():
+    news_type = request.args.get('news_type')
     page = request.args.get('page')
     # 获取新闻或通告列表
-    if type == 'news':
-        list = sn.get_news(origin, page)
-    else:
-        list = sn.get_notice(origin, page)
-
-    return json.dumps(list)
+    list = sn.get_news(news_type, page)
+    return json.dumps({'status': 200, 'data': list})
 
 
-@app.route('/<type>/<origin>/<url>', methods=['GET'])
+@app.route('/news/detail', methods=['GET'])
 # 接受新闻内容URL
-def get_detail_api(type, origin, url):
+def get_detail_api():
+    url = request.args.get('url')
+    type = request.args.get('type')
     # 获取新闻或者通告详细
-    if type == "news":
-        detail = sn.get_news_detail(url)
-    if type == "notice":
-        detail = sn.get_notice_detail(url)
-
-    return json.dumps(detail)
+    url = unquote(url)
+    detail = sn.get_news_detail(url)
+    return json.dumps({'status': 200, 'data': detail})

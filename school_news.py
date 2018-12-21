@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import logging
 import time
 from fake_useragent import UserAgent
+from base64 import b64encode
 
 ua = UserAgent(verify_ssl=False)
 # 生成USER-ANGENT
@@ -52,8 +53,8 @@ def get_news(origin, page=1):
             data = {
                 'title': title,
                 'url': u'http://www.gdst.cc/' + url,
-                'date': date,
-                'origin': origin,
+                'time': date,
+                'type': origin
             }
             news_list.append(data)
 
@@ -95,15 +96,18 @@ def get_news_detail(url):
     try:
         headers = {'user-agent': ua.chrome}
         r = requests.get(url, headers=headers)
-        soup = BeautifulSoup(r.text, 'html.parser')
+        soup = BeautifulSoup(r.text.encode(r.encoding), 'html.parser')
         rows = soup.find(class_='articleinfor')
     except Exception as e:
         logging.warning(u'学院官网连接超时错误:%s' % e)
         return {}
     else:
-        data = rows
-
-    return rows
+        content = ""
+        if rows:
+            content = rows.find(class_="content")
+            content = str(content).replace("src=\"/", "src=\"http://www.gdust.cn/")
+            content = b64encode(content.encode())
+    return {'html': bytes.decode(content)}
 
 
 def get_notice_detail(url):
