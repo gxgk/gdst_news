@@ -4,6 +4,7 @@ import logging
 import time
 from fake_useragent import UserAgent
 from base64 import b64encode
+import re
 
 ua = UserAgent(verify_ssl=False)
 # 生成USER-ANGENT
@@ -27,14 +28,12 @@ notice_tyoe = {
     'jdx': '/jdx/xbxw/tzgg/?page=',
 }
 
-news_list = []
-notice_list = []
-
 
 def get_news(origin, page=1):
     # 获取新闻列表,接受前端的请求的来源（院别）,页数默认为1，新闻获取数量为15条
     url = 'http://www.gdust.cn/' + news_type[origin] + str(page)
     try:
+        news_list = []
         headers = {'user-agent': ua.chrome}
         r = requests.get(url, headers=headers)
         soup = BeautifulSoup(r.text, "html.parser")
@@ -43,52 +42,27 @@ def get_news(origin, page=1):
         logging.warning(u'学院官网连接超时错误:%s' % e)
         return {}
     else:
-        for row in rows:
-            date = row.find(class_='date')
-            # 匹配时间
-            date = date.getText()
-            date.replace('/', '-')
-            title = row.a.string
-            url = row.a.attrs['href']
-            data = {
-                'title': title,
-                'url': u'http://www.gdst.cc/' + url,
-                'time': date,
-                'type': origin
-            }
-            news_list.append(data)
+        news_page = soup.find(class_='pageinfo').getText
+        news_page = re.search(r"页次：(\d{1,2})\/", str(news_page))[1]
+        if page == news_page:
+            for row in rows:
+                date = row.find(class_='date')
+                # 匹配时间
+                date = date.getText()
+                date.replace('/', '-')
+                title = row.a.string
+                url = row.a.attrs['href']
+                data = {
+                    'title': title,
+                    'url': u'http://www.gdst.cc/' + url,
+                    'time': date,
+                    'type': origin
+                }
+                news_list.append(data)
+        else:
+            return{}
 
     return news_list
-
-
-def get_notice(origin, page=1):
-    # 获取通告列表，接受前端的请求的来源（院别）,页数默认为1，新闻获取数量为15条
-    url = 'http://www.gdust.cn/' + notice_list[origin] + str(page)
-    try:
-        headers = {'user-agent': ua.chrome}
-        r = requests.get(url, headers=headers)
-        soup = BeautifulSoup(r.text, "html.parser")
-        rows = soup.find(class_='article').find_all('li')
-    except Exception as e:
-        logging.warning(u'学院官网连接超时错误:%s' % e)
-        return {}
-    else:
-        for row in rows:
-            date = row.find(class_='date')
-            # 匹配时间
-            date = date.getText()
-            date.replace('/', '-')
-            title = row.a.string
-            url = row.a.attrs['href']
-            data = {
-                'title': title,
-                'url': u'http://www.gdst.cc/' + url,
-                'date': date,
-                'origin': origin,
-            }
-            notice_list.append(data)
-
-    return notice_list
 
 
 def get_news_detail(url):
@@ -104,25 +78,15 @@ def get_news_detail(url):
     else:
         content = ""
         if rows:
+            title = rows.find(class_="title").string
+            date = rows.find(class_="info")
+            date = re.search(r'\d.*\d', str(date))[0]
             content = rows.find(class_="content")
-            content = str(content).replace("src=\"/", "src=\"http://www.gdust.cn/")
+            content = str(content).replace(
+                "src=\"/", "src=\"http://www.gdust.cn/")
             content = b64encode(content.encode())
-    return {'html': bytes.decode(content)}
-
-
-def get_notice_detail(url):
-    # 获取通告详细
-    try:
-        headers = {'user-agent': ua.chrome}
-        r = requests.get(content['url'], headers=headers)
-        soup = BeautifulSoup(r.text, 'html.parser')
-        rows = soup.find(class_='articleinfor')
-    except Exception as e:
-        logging.warning(u'学院官网连接超时错误:%s' % e)
-        return {}
-    else:
-        data = rows
-    return rows
-
-
-
+    return {
+        'title': title,
+        'time': date,
+        'html': bytes.decode(content),
+    }

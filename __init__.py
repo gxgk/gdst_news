@@ -18,8 +18,11 @@ def get_list_api():
 # 接受新闻内容URL
 def get_detail_api():
     url = request.args.get('url')
-    type = request.args.get('type')
     # 获取新闻或者通告详细
     url = unquote(url)
     detail = sn.get_news_detail(url)
     return json.dumps({'status': 200, 'data': detail})
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
