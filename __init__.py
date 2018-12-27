@@ -2,6 +2,7 @@ from flask import Flask, request
 import json
 import school_news as sn
 from urllib.parse import unquote
+import re
 app = Flask(__name__)
 
 
@@ -20,7 +21,12 @@ def get_detail_api():
     url = request.args.get('url')
     # 获取新闻或者通告详细
     url = unquote(url)
-    detail = sn.get_news_detail(url)
+    try:
+        if re.search('http://jwc.gdst.cc/', url)[0]:
+            detail = sn.get_notice_detail(url)
+    except BaseException:
+        detail = sn.get_news_detail(url)
+
     return json.dumps({'status': 200, 'data': detail})
 
 
