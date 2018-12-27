@@ -13,15 +13,24 @@ ua = UserAgent(verify_ssl=False)
 news_type = {
     'xy': '/news/syyw/?page=',
     'jw': 'http://jwc.gdst.cc/jiaowuchu/index.aspx?lanmuid=94&sublanmuid=677&page=',
+    '应用英语系': 'yyx/xbxw/xbdt/?page=',
+    '计算机系': 'jsjx/xbxw/xbdt/?page=',
+    '管理系': 'glx/xbxw/xbdt/?page=',
+    '机电工程系': 'jdx/xbxw/xbdt/?page=',
+    '艺术系': 'ysx/xbxw/xbdt/?page=',
+    '财经系': 'cjx/xbxw/xbdt/?page=',
 }
 
 
-def get_news(origin, page=1):
+def get_news(origin, faculty, page=1):
     # 获取新闻列表,接受前端的请求的来源（院别）,页数默认为1，新闻获取数量为15条
-    if origin != 'jw':
+    if origin == 'xy':
         url = 'http://www.gdust.cn/' + news_type[origin] + str(page)
-    else :
+    elif origin == 'xb':
+        url = 'http://www.gdust.cn/' + news_type[faculty] + str(page)
+    else:
         url = news_type[origin] + str(page)
+
     try:
         news_list = []
         headers = {'user-agent': ua.chrome}
@@ -29,8 +38,8 @@ def get_news(origin, page=1):
         soup = BeautifulSoup(r.text, "html.parser")
         rows = soup.find(class_='article').find_all('li')
     except Exception as e:
-            logging.warning(u'学院官网连接超时错误:%s' % e)
-            return {}
+        logging.warning(u'学院官网连接超时错误:%s' % e)
+        return {}
     else:
         '''
         news_page = soup.find(class_='pageinfo').getText
@@ -49,14 +58,14 @@ def get_news(origin, page=1):
             if origin == 'jw':
                 data = {
                     'title': title,
-                    'url':  url,
+                    'url': url,
                     'time': date,
                     'type': origin
                 }
             else:
                 data = {
                     'title': title,
-                    'url': u'http://www.gdst.cc/' + url,
+                    'url': u'http://www.gdst.cc' + url,
                     'time': date,
                     'type': origin
                 }
@@ -87,9 +96,10 @@ def get_news_detail(url):
         if rows:
             title = rows.find(class_="title").string
             date = rows.find(class_="info")
-            date = re.search('\d.*\d',str(date))[0]
+            date = re.search(r'\d.*\d', str(date))[0]
             content = rows.find(class_="content")
-            content = str(content).replace("src=\"/", "src=\"http://www.gdust.cn/")
+            content = str(content).replace(
+                "src=\"/", "src=\"http://www.gdust.cn/")
             content = b64encode(content.encode())
     return {
         'title': title,
@@ -97,11 +107,12 @@ def get_news_detail(url):
         'html': bytes.decode(content),
     }
 
+
 def get_notice_detail(url):
      # 获取教务处详细
     try:
         headers = {'user-agent': ua.chrome}
-        r = requests.get(url+'?lanmuid=94&sublanmuid=677', headers=headers)
+        r = requests.get(url + '?lanmuid=94&sublanmuid=677', headers=headers)
         soup = BeautifulSoup(r.text.encode(r.encoding), 'html.parser')
         rows = soup.find(class_='article')
     except Exception as e:
@@ -114,18 +125,13 @@ def get_notice_detail(url):
         if rows:
             title = rows.find(class_="title").find_all('h1')
             date = rows.find(class_="info")
-            date = re.search('\d.*\d',str(date))[0]
+            date = re.search(r'\d.*\d', str(date))[0]
             content = rows.find(class_="content")
-            content = str(content).replace("src=\"/", "src=\"http://www.gdust.cn/")
+            content = str(content).replace(
+                "src=\"/", "src=\"http://www.gdust.cn/")
             content = b64encode(content.encode())
     return {
         'title': title,
         'time': date,
         'html': bytes.decode(content),
     }
-
-
-
-
-
-

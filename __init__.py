@@ -10,9 +10,15 @@ app = Flask(__name__)
 def get_list_api():
     news_type = request.args.get('news_type')
     page = request.args.get('page')
+    faculty = request.args.get('faculty')
+    faculty = unquote(faculty)
     # 获取新闻或通告列表
-    list = sn.get_news(news_type, page)
-    return json.dumps({'status': 200, 'data': list})
+    list = sn.get_news(news_type,faculty,page)
+
+    return json.dumps({
+        'status': 200,
+        'data': list,
+    })
 
 
 @app.route('/news/detail', methods=['GET'])
