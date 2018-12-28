@@ -13,7 +13,7 @@ def get_list_api():
     faculty = request.args.get('faculty')
     faculty = unquote(faculty)
     # 获取新闻或通告列表
-    list = sn.get_news(news_type,faculty,page)
+    list = sn.get_news(news_type, faculty, page)
 
     return json.dumps({
         'status': 200,

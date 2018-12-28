@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import logging
-import time
+from new_cache import new_cache
 from fake_useragent import UserAgent
 from base64 import b64encode
 from urllib.parse import quote
@@ -22,6 +22,7 @@ news_type = {
 }
 
 
+@new_cache()
 def get_news(origin, faculty, page=1):
     # 获取新闻列表,接受前端的请求的来源（院别）,页数默认为1，新闻获取数量为15条
     if origin == 'xy':
@@ -79,6 +80,7 @@ def get_news(origin, faculty, page=1):
     return news_list
 
 
+@new_cache()
 def get_news_detail(url):
     # 获取新闻详细
     try:
@@ -108,6 +110,7 @@ def get_news_detail(url):
     }
 
 
+@new_cache()
 def get_notice_detail(url):
      # 获取教务处详细
     try:
