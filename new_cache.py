@@ -1,32 +1,39 @@
 import redis
 import re
+import ast
 
 pool = redis.ConnectionPool(host='localhost', port=6379)
 r = redis.Redis(connection_pool=pool)
 
 
-def new_cache(*args, **kwargs):
+def new_cache(storage_type):
+    # storage_type 为储存类型
     def decorator(func):
         def wrapper(*args, **kwargs):
             args_data = [data for data in args]
+            '''
+            若是获取LIST，参数为 origin,faculty,page
+            若是获取DETAIL，参数为 url
 
-            if len(args_data) == 3:
+            '''
+            if storage_type == 'list':
                 name = args_data[0]
                 # origin
-                if name == 'xy' or name == 'jw':
+                if name in ['xy', 'jw']':
+                    # 将xy,jw与xb区分,方便进行缓存
                     key = args_data[2]
                     # page
                 else:
                     key = args_data[1] + '_' + args_data[2]
                     # faculty_page
                 data = r.hget(name, key)
-                if data == False or data == None:
+                if data:
                     data = func(*args, **kwargs)
                     r.hset(name, key, data)
                     r.expire(name, 86400)
                     # 缓存过期时间为一天
                 else:
-                    data = eval(data)
+                    data = ast.literal_eval(data)
                     return data
 
             else:
@@ -41,12 +48,12 @@ def new_cache(*args, **kwargs):
                     kw = re.search(r'id\=(\d{1,3})', url)[1]
 
                 data = r.get(kw)
-                if data == False or data == None:
+                if data:
                     data = func(*args, **kwargs)
                     r.set(kw, data,)
                     r.expire(kw, 86400)
                 else:
-                    data = eval(data)
+                    data = ast.literal_eval(data)
                     return data
 
             return data
