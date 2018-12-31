@@ -157,14 +157,11 @@ if __name__ == "__main__":
 
     for name in ['xb', 'jw', 'xy']:
         # 缓存详细
-        data = r.hgetall(name)
-        for value in data:
-            value = ast.literal_eval(bytes.decode(value))
+        data = ast.literal_eval(bytes.decode(r.hvals(name)[1]))
+        for url in data['url']:
             if name is not 'jw':
-                for url in value['url']:
-                    get_news_detail(url)
-                    time.sleep(1)
+                get_news_detail(url)
+                time.sleep(1)
             else:
-                for url in value['url']:
-                    get_notice_detail(url)
-                    time.sleep(1)
+                get_notice_detail(url)
+                time.sleep(1)
