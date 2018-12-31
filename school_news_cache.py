@@ -6,6 +6,8 @@ from urllib.parse import quote
 import re
 from all_cache import new_cache
 import redis
+import time
+import ast
 
 pool = redis.ConnectionPool(host='localhost', port=6379)
 r = redis.Redis(connection_pool=pool)
@@ -157,6 +159,7 @@ if __name__ == "__main__":
         # 缓存详细
         data = r.hgetall(name)
         for value in data:
+            value = ast.literal_eval(bytes.decode(value))
             if name is not 'jw':
                 for url in value['url']:
                     get_news_detail(url)
