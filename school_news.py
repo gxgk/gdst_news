@@ -22,7 +22,7 @@ news_type = {
 }
 
 
-@new_cache()
+@new_cache('list')
 def get_news(origin, faculty, page=1):
     # 获取新闻列表,接受前端的请求的来源（院别）,页数默认为1，新闻获取数量为15条
     if origin == 'xy':
@@ -46,7 +46,6 @@ def get_news(origin, faculty, page=1):
         news_page = soup.find(class_='pageinfo').getText
         news_page = re.search("页次：(\d{1,2})\/",str(news_page))[1]
         if page == news_page:
-
         '''
         for row in rows:
             date = row.find(class_='date')
@@ -73,14 +72,14 @@ def get_news(origin, faculty, page=1):
 
             news_list.append(data)
         '''
-        #else:
-            #return{}
-
+        else:
+            return{}
         '''
+
     return news_list
 
 
-@new_cache()
+@new_cache('detail')
 def get_news_detail(url):
     # 获取新闻详细
     try:
@@ -98,7 +97,7 @@ def get_news_detail(url):
         if rows:
             title = rows.find(class_="title").string
             date = rows.find(class_="info")
-            date = re.search(r'\d.*\d', str(date))[0]
+            date = re.search('\d.*\d', str(date))[0]
             content = rows.find(class_="content")
             content = str(content).replace(
                 "src=\"/", "src=\"http://www.gdust.cn/")
@@ -110,12 +109,12 @@ def get_news_detail(url):
     }
 
 
-@new_cache()
+@new_cache('detail')
 def get_notice_detail(url):
      # 获取教务处详细
     try:
         headers = {'user-agent': ua.chrome}
-        r = requests.get(url + '?lanmuid=94&sublanmuid=677', headers=headers)
+        r = requests.get(url, headers=headers)
         soup = BeautifulSoup(r.text.encode(r.encoding), 'html.parser')
         rows = soup.find(class_='article')
     except Exception as e:
@@ -128,7 +127,7 @@ def get_notice_detail(url):
         if rows:
             title = rows.find(class_="title").find_all('h1')
             date = rows.find(class_="info")
-            date = re.search(r'\d.*\d', str(date))[0]
+            date = re.search('\d.*\d', str(date))[0]
             content = rows.find(class_="content")
             content = str(content).replace(
                 "src=\"/", "src=\"http://www.gdust.cn/")
