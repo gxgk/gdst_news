@@ -1,40 +1,15 @@
-from flask import Flask, request
-import json
-import school_news as sn
-from urllib.parse import unquote
-import re
-app = Flask(__name__)
+from flask import Flask
+from flask_redis import FlaskRedis
+
+redis_store = FlaskRedis()
 
 
-@app.route('/news/list', methods=['GET'])
-def get_list_api():
-    news_type = request.args.get('news_type')
-    page = request.args.get('page')
-    faculty = request.args.get('faculty')
-    faculty = unquote(faculty)
-    # 获取新闻或通告列表
-    list = sn.get_news(news_type, faculty, page)
+def create_app():
+    app = Flask(__name__, instance_relative_config=False)
+    app.config.from_object('config')
 
-    return json.dumps({
-        'status': 200,
-        'data': list,
-    })
+    from app.school_news import school_news_mod
+    app.register_blueprint(school_news_mod)
+    redis_store.init_app(app)
 
-
-@app.route('/news/detail', methods=['GET'])
-# 接受新闻内容URL
-def get_detail_api():
-    url = request.args.get('url')
-    # 获取新闻或者通告详细
-    url = unquote(url)
-    try:
-        if re.search('http://jwc.gdst.cc/', url)[0]:
-            detail = sn.get_notice_detail(url)
-    except BaseException:
-        detail = sn.get_news_detail(url)
-
-    return json.dumps({'status': 200, 'data': detail})
-
-
-if __name__ == "__main__":
-    app.run(debug=True)
+    return app
