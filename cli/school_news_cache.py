@@ -31,8 +31,8 @@ def main():
             data = bytes.decode(ret.content)
             for content in literal_eval(data)['data']:
                 url = content['url']
-                r = requests.get(
-                    "http://127.0.0.1:500/news/detail?type=%s&url=%s" %
+                requests.get(
+                    "http://127.0.0.1:5000/news/detail?type=%s&url=%s" %
                     (origin, url))
                 time.sleep(1)
             time.sleep(1)
