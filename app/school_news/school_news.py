@@ -6,6 +6,8 @@ from fake_useragent import UserAgent
 from base64 import b64encode
 from urllib.parse import quote
 import re
+from app import redis_store
+import ast
 
 ua = UserAgent(verify_ssl=False)
 # 生成USER-ANGENT
@@ -97,11 +99,15 @@ def get_news_detail(url):
         if rows:
             title = rows.find(class_="title").string
             date = rows.find(class_="info")
-            date = re.search(r'\d.*\d', str(date))[0]
+            date = re.search('\d.*\d', str(date))[0]
             content = rows.find(class_="content")
             content = str(content).replace(
                 "src=\"/", "src=\"http://www.gdust.cn/")
             content = b64encode(content.encode())
+    '''
+    if type(content) != 'bytes':
+        str.encode(content)
+    '''
     return {
         'title': title,
         'time': date,
@@ -127,7 +133,7 @@ def get_notice_detail(url):
         if rows:
             title = rows.find(class_="title").find_all('h1')
             date = rows.find(class_="info")
-            date = re.search(r'\d.*\d', str(date))[0]
+            date = re.search('\d.*\d', str(date))[0]
             content = rows.find(class_="content")
             content = str(content).replace(
                 "src=\"/", "src=\"http://www.gdust.cn/")
@@ -137,3 +143,24 @@ def get_notice_detail(url):
         'time': date,
         'html': bytes.decode(content),
     }
+
+
+def get_headline(faculty, page=1):
+    type = ['xy', 'xb', 'jw']
+    news_list = []
+
+    def takeSecond(dic):
+        return dic['time']
+    for name in type:
+        if name != 'xb':
+            key = str(page)
+        else:
+            key = faculty + '_' + str(page)
+
+        data = ast.literal_eval(bytes.decode(redis_store.hget(name, key)))
+        for content in data:
+            news_list.append(content)
+
+    news_list.sort(key=takeSecond, reverse=True)
+
+    return news_list
