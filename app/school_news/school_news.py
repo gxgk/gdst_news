@@ -8,6 +8,7 @@ from urllib.parse import quote
 import re
 from app import redis_store
 import ast
+import config
 
 ua = UserAgent(verify_ssl=False)
 # 生成USER-ANGENT
@@ -18,12 +19,12 @@ def get_news(origin, faculty, page=1):
     # 获取新闻列表,接受前端的请求的来源（院别）,页数默认为1，新闻获取数量为15条
     if origin == 'xy':
         url = 'http://www.gdust.cn/' + \
-            app.config['NEWS_TYPE'][origin] + str(page)
+            config.NEWS_TYPE[origin] + str(page)
     elif origin == 'xb':
         url = 'http://www.gdust.cn/' + \
-            app.config['NEWS_TYPE'][faculty] + str(page)
+            config.NEWS_TYPE[faculty] + str(page)
     else:
-        url = app.config['NEWS_TYPE'][origin] + str(page)
+        url = config.NEWS_TYPE[origin] + str(page)
 
     try:
         news_list = []
@@ -86,10 +87,10 @@ def get_news_detail(url):
         if rows:
             title = rows.find(class_="title").string
             date = rows.find(class_="info")
-            date = re.search('\d.*\d', str(date))[0]
+            date = re.search(r'\d.*\d', str(date))[0]
             content = rows.find(class_="content")
             content = str(content).replace(
-                'src=\"/', 'src=\"http://www.gdust.cn/')
+                "src=\"/", "src=\"http://www.gdust.cn/")
             content = b64encode(content.encode())
 
     return {
@@ -117,10 +118,10 @@ def get_notice_detail(url):
         if rows:
             title = rows.find(class_="title").find_all('h1')
             date = rows.find(class_="info")
-            date = re.search('\d.*\d', str(date))[0]
+            date = re.search(r'\d.*\d', str(date))[0]
             content = rows.find(class_="content")
             content = str(content).replace(
-                'src=\"/', 'src=\"http://www.gdust.cn/')
+                "src=\"/", "src=\"http://www.gdust.cn/")
             content = b64encode(content.encode())
     return {
         'title': title,
@@ -130,9 +131,8 @@ def get_notice_detail(url):
 
 
 def get_headline(faculty, page=1):
-    type = ['xy', 'xb', 'jw']
     news_list = []
-    for name in type:
+    for name in config.ORIGIN_TYPE:
         if name != 'xb':
             key = str(page)
         else:
