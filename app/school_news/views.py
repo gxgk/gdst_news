@@ -13,7 +13,10 @@ def get_list_api():
     faculty = request.args.get('faculty')
     faculty = unquote(faculty)
     # 获取新闻或通告列表
-    list = school_news.get_news(news_type, faculty, page)
+    if news_type != 'all':
+        list = school_news.get_news(news_type, faculty, page)
+    else:
+        list = school_news.get_headline(faculty, page)
 
     return json.dumps({
         'status': 200,

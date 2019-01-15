@@ -6,31 +6,25 @@ from fake_useragent import UserAgent
 from base64 import b64encode
 from urllib.parse import quote
 import re
+from app import redis_store
+import ast
+import config
 
 ua = UserAgent(verify_ssl=False)
 # 生成USER-ANGENT
-
-news_type = {
-    'xy': '/news/syyw/?page=',
-    'jw': 'http://jwc.gdst.cc/jiaowuchu/index.aspx?lanmuid=94&sublanmuid=677&page=',
-    '应用英语系': 'yyx/xbxw/xbdt/?page=',
-    '计算机系': 'jsjx/xbxw/xbdt/?page=',
-    '管理系': 'glx/xbxw/xbdt/?page=',
-    '机电工程系': 'jdx/xbxw/xbdt/?page=',
-    '艺术系': 'ysx/xbxw/xbdt/?page=',
-    '财经系': 'cjx/xbxw/xbdt/?page=',
-}
 
 
 @new_cache('list')
 def get_news(origin, faculty, page=1):
     # 获取新闻列表,接受前端的请求的来源（院别）,页数默认为1，新闻获取数量为15条
     if origin == 'xy':
-        url = 'http://www.gdust.cn/' + news_type[origin] + str(page)
+        url = 'http://www.gdust.cn/' + \
+            config.NEWS_TYPE[origin] + str(page)
     elif origin == 'xb':
-        url = 'http://www.gdust.cn/' + news_type[faculty] + str(page)
+        url = 'http://www.gdust.cn/' + \
+            config.NEWS_TYPE[faculty] + str(page)
     else:
-        url = news_type[origin] + str(page)
+        url = config.NEWS_TYPE[origin] + str(page)
 
     try:
         news_list = []
@@ -71,10 +65,6 @@ def get_news(origin, faculty, page=1):
                 }
 
             news_list.append(data)
-        '''
-        else:
-            return{}
-        '''
 
     return news_list
 
@@ -100,8 +90,9 @@ def get_news_detail(url):
             date = re.search(r'\d.*\d', str(date))[0]
             content = rows.find(class_="content")
             content = str(content).replace(
-                "src=\"/", "src=\"http://www.gdust.cn/")
+                'src="/', 'src="http://www.gdust.cn/')
             content = b64encode(content.encode())
+
     return {
         'title': title,
         'time': date,
@@ -130,10 +121,27 @@ def get_notice_detail(url):
             date = re.search(r'\d.*\d', str(date))[0]
             content = rows.find(class_="content")
             content = str(content).replace(
-                "src=\"/", "src=\"http://www.gdust.cn/")
+                'src="/', 'src="http://www.gdust.cn/')
             content = b64encode(content.encode())
     return {
         'title': title,
         'time': date,
         'html': bytes.decode(content),
     }
+
+
+def get_headline(faculty, page=1):
+    news_list = []
+    for name in config.ORIGIN_TYPE:
+        if name != 'xb':
+            key = str(page)
+        else:
+            key = faculty + '_' + str(page)
+
+        data = ast.literal_eval(bytes.decode(redis_store.hget(name, key)))
+        for content in data:
+            news_list.append(content)
+
+    news_list.sort(key=lambda element: element['time'], reverse=True)
+
+    return news_list
