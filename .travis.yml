@@ -3,3 +3,6 @@ python:
   - '3.4'
   - '3.5'
   - '3.6.5'
+
+services:
+  - redis-server
