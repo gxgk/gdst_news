@@ -85,7 +85,7 @@ def get_news_detail(url):
             date = re.search('\d.*\d', str(date))[0]
             content = rows.find(class_="content")
             content = str(content).replace(
-                'src="/', 'src="http://www.gdust.cn/')
+                "src=\"/", "src=\"http://www.gdust.cn/")
             content = b64encode(content.encode())
 
     return {
