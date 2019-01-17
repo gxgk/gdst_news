@@ -91,7 +91,7 @@ def get_news_detail(url):
     return {
         'title': title,
         'time': date,
-        'html': bytes.decode(content),
+        'html': bytes.decode(content.encode()),
     }
 
 
@@ -120,7 +120,7 @@ def get_notice_detail(url):
     return {
         'title': title,
         'time': date,
-        'html': bytes.decode(content),
+        'html': bytes.decode(content.encode()),
     }
 
 
