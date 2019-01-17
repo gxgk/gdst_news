@@ -10,9 +10,6 @@ from app import redis_store
 import ast
 import config
 
-ua = UserAgent(verify_ssl=False)
-# 生成USER-ANGENT
-
 
 @new_cache('list')
 def get_news(origin, faculty, page=1):
@@ -28,8 +25,7 @@ def get_news(origin, faculty, page=1):
 
     try:
         news_list = []
-        headers = {'user-agent': ua.chrome}
-        r = requests.get(url, headers=headers)
+        r = requests.get(url)
         soup = BeautifulSoup(r.text, "html.parser")
         rows = soup.find(class_='article').find_all('li')
     except Exception as e:
@@ -73,8 +69,7 @@ def get_news(origin, faculty, page=1):
 def get_news_detail(url):
     # 获取新闻详细
     try:
-        headers = {'user-agent': ua.chrome}
-        r = requests.get(url, headers=headers)
+        r = requests.get(url)
         soup = BeautifulSoup(r.text.encode(r.encoding), 'html.parser')
         rows = soup.find(class_='articleinfor')
     except Exception as e:
@@ -87,10 +82,10 @@ def get_news_detail(url):
         if rows:
             title = rows.find(class_="title").string
             date = rows.find(class_="info")
-            date = re.search(r'\d.*\d', str(date))[0]
+            date = re.search('\d.*\d', str(date))[0]
             content = rows.find(class_="content")
             content = str(content).replace(
-                'src="/', 'src="http://www.gdust.cn/')
+                "src=\"/", "src=\"http://www.gdust.cn/")
             content = b64encode(content.encode())
 
     return {
@@ -104,8 +99,7 @@ def get_news_detail(url):
 def get_notice_detail(url):
      # 获取教务处详细
     try:
-        headers = {'user-agent': ua.chrome}
-        r = requests.get(url, headers=headers)
+        r = requests.get(url)
         soup = BeautifulSoup(r.text.encode(r.encoding), 'html.parser')
         rows = soup.find(class_='article')
     except Exception as e:
@@ -118,10 +112,10 @@ def get_notice_detail(url):
         if rows:
             title = rows.find(class_="title").find_all('h1')
             date = rows.find(class_="info")
-            date = re.search(r'\d.*\d', str(date))[0]
+            date = re.search('\d.*\d', str(date))[0]
             content = rows.find(class_="content")
             content = str(content).replace(
-                'src="/', 'src="http://www.gdust.cn/')
+                'src=\"/', 'src=\"http://www.gdust.cn/')
             content = b64encode(content.encode())
     return {
         'title': title,

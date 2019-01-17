@@ -32,7 +32,7 @@ def new_cache(storage_type, *args, **kwargs):
                     return data
                 else:
                     data = func(*args, **kwargs)
-                    redis_store.hset(name, key, data)
+                    redis_store.hset(name, key, str(data))
                     redis_store.expire(name, 86400)
                     # 缓存过期时间为一天
             elif storage_type == 'detail':
@@ -50,7 +50,7 @@ def new_cache(storage_type, *args, **kwargs):
                 data = redis_store.get(kw)
                 if not data:
                     data = func(*args, **kwargs)
-                    redis_store.set(kw, data,)
+                    redis_store.set(kw, str(data))
                     redis_store.expire(kw, 86400)
                 else:
                     data = ast.literal_eval(bytes.decode(data))
