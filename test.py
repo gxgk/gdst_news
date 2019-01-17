@@ -35,10 +35,10 @@ class TestCase(unittest.TestCase):
                 ret = self.app.get(
                     "%s?news_type=%s&page=%s&faculty=%s" %
                     (config.LIST_URL, origin, page, faculty))
-                data = bytes.decode(ret.content)
+                data = bytes.decode(ret.data)
                 for content in ast.literal_eval(data)['data']:
                     url = content['url']
-                    app.get(
+                    self.app.get(
                         "%s?type=%s&url=%s" %
                         (config.DETAIL_URL, origin, url))
                     time.sleep(1)
