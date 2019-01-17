@@ -91,7 +91,7 @@ def get_news_detail(url):
     return {
         'title': title,
         'time': date,
-        'html': bytes.decode(content.encode()),
+        'html': bytes.decode(content),
     }
 
 
@@ -116,7 +116,7 @@ def get_notice_detail(url):
             content = rows.find(class_="content")
             content = str(content).replace(
                 'src="/', 'src="http://www.gdust.cn/')
-            content = b64encode(content.encode())
+            content = b64encode(content)
     return {
         'title': title,
         'time': date,
