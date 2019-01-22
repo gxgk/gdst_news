@@ -2,7 +2,6 @@ import requests
 from bs4 import BeautifulSoup
 import logging
 from .new_cache import new_cache
-from fake_useragent import UserAgent
 from base64 import b64encode
 from urllib.parse import quote
 import re
@@ -55,7 +54,7 @@ def get_news(origin, faculty, page=1):
             else:
                 data = {
                     'title': title,
-                    'url': u'http://www.gdst.cc' + url,
+                    'url': u'http://www.gdust.cn' + url,
                     'time': date,
                     'type': origin
                 }
@@ -77,6 +76,9 @@ def get_news_detail(url):
         return {}
     else:
         try:
+            title = ''
+            date = ''
+            html = ''
             if rows:
                 title = rows.find(class_="title").string
                 date = rows.find(class_="info")
