@@ -80,12 +80,16 @@ def get_news_detail(url):
         logging.warning(u'学院官网连接超时错误:%s' % e)
         return {}
     else:
-        try:
-            title = ''
-            date = ''
-            html = ''
-            if rows:
+        if rows:
+            try:
                 title = rows.find(class_="title").string
+
+            except BaseException:
+                suffix = re.search('(\d{4})\.html', url)[1]
+                url = 'http://www.gdust.cn/index.aspx?lanmuid=63&sublanmuid=671&id=%s' % suffix
+                get_news_detail(url)
+
+            else:
                 date = rows.find(class_="info")
                 date = re.search('\d.*\d', str(date))[0]
                 content = rows.find(class_="content")
@@ -94,17 +98,11 @@ def get_news_detail(url):
                 content = b64encode(content.encode())
                 html = bytes.decode(content)
 
-        except BaseException:
-            suffix = re.search('(\d{4})\.html', url)[1]
-            url = 'http://www.gdust.cn/index.aspx?lanmuid=63&sublanmuid=671&id=%s' % suffix
-            get_news_detail(url)
-
-        else:
-            return {
-                'title': title,
-                'time': date,
-                'html': html,
-            }
+                return {
+                    'title': title,
+                    'time': date,
+                    'html': html,
+                }
 
 
 @new_cache('detail')
