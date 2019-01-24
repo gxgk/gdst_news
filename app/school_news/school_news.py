@@ -43,15 +43,20 @@ def get_news(origin, faculty, page=1):
             date.replace('/', '-')
             title = row.a.string
             url = row.a.attrs['href']
-            url = quote(url)
-            if origin == 'jw':
+            if url == '#':
+                continue
+            elif origin == 'jw':
+                url = quote(url)
                 data = {
                     'title': title,
                     'url': url,
                     'time': date,
                     'type': origin
                 }
+
+                news_list.append(data)
             else:
+                url = quote(url)
                 data = {
                     'title': title,
                     'url': u'http://www.gdust.cn' + url,
@@ -59,7 +64,7 @@ def get_news(origin, faculty, page=1):
                     'type': origin
                 }
 
-            news_list.append(data)
+                news_list.append(data)
 
     return news_list
 
