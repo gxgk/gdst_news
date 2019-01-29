@@ -41,6 +41,7 @@ class TestCase(unittest.TestCase):
                     self.app.get(
                         "%s?type=%s&url=%s" %
                         (config.DETAIL_URL, origin, url))
+                    
                     time.sleep(1)
                 time.sleep(1)
 
