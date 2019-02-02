@@ -85,13 +85,13 @@ def get_news_detail(url):
                 title = rows.find(class_="title").string
 
             except BaseException:
-                suffix = re.search('(\d{4})\.html', url)[1]
+                suffix = re.search('(\d{4})\.html', url).group(1)
                 url = 'http://www.gdust.cn/index.aspx?lanmuid=63&sublanmuid=671&id=%s' % suffix
                 get_news_detail(url)
 
             else:
                 date = rows.find(class_="info")
-                date = re.search('\d.*\d', str(date))[0]
+                date = re.search('\d.*\d', str(date)).group(0)
                 content = rows.find(class_="content")
                 content = str(content).replace(
                     'src="/', 'src="http://www.gdust.cn/')
@@ -118,7 +118,7 @@ def get_notice_detail(url):
     else:
         title = rows.find(class_="title").find_all('h1')
         date = rows.find(class_="info")
-        date = re.search('\d.*\d', str(date))[0]
+        date = re.search('\d.*\d', str(date)).group(0)
         content = rows.find(class_="content")
         content = str(content).replace(
             'src="/', 'src="http://www.gdust.cn/')
