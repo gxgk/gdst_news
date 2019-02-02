@@ -24,7 +24,7 @@ def get_news(origin, faculty, page=1):
 
     try:
         news_list = []
-        r = requests.get(url)
+        r = requests.get(url, timeout=10)
         soup = BeautifulSoup(r.text, "html.parser")
         rows = soup.find(class_='article').find_all('li')
     except Exception as e:
@@ -73,7 +73,7 @@ def get_news(origin, faculty, page=1):
 def get_news_detail(url):
     # 获取新闻详细
     try:
-        r = requests.get(url)
+        r = requests.get(url, timeout=10)
         soup = BeautifulSoup(r.text.encode(r.encoding), 'html.parser')
         rows = soup.find(class_='articleinfor')
     except Exception as e:
@@ -109,7 +109,7 @@ def get_news_detail(url):
 def get_notice_detail(url):
      # 获取教务处详细
     try:
-        r = requests.get(url)
+        r = requests.get(url, timeout=10)
         soup = BeautifulSoup(r.text.encode(r.encoding), 'html.parser')
         rows = soup.find(class_='article')
     except Exception as e:
