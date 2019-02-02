@@ -1,0 +1,16 @@
+language: python
+python:
+  - '3.4'
+  - '3.5'
+  - '3.6.5'
+
+services:
+  - redis-server
+before_install:
+  - cp config.py.default config.py
+install: pip install -r requirements.txt
+before_script:
+  - export FLASK_APP="$TRAVIS_BUILD_DIR/serve.py"
+  - export FLASK_ENV=development
+
+script: python test.py

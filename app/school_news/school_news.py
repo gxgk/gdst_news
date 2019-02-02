@@ -80,6 +80,7 @@ def get_news_detail(url):
         logging.warning(u'学院官网连接超时错误:%s' % e)
         return {}
     else:
+<<<<<<< HEAD
         if rows:
             try:
                 title = rows.find(class_="title").string
@@ -103,6 +104,25 @@ def get_news_detail(url):
                     'time': date,
                     'html': html,
                 }
+=======
+        content = ""
+        title = ''
+        date = ''
+        if rows:
+            title = rows.find(class_="title").string
+            date = rows.find(class_="info")
+            date = re.search('\d.*\d', str(date))[0]
+            content = rows.find(class_="content")
+            content = str(content).replace(
+                "src=\"/", "src=\"http://www.gdust.cn/")
+            content = b64encode(content.encode())
+
+    return {
+        'title': title,
+        'time': date,
+        'html': bytes.decode(content),
+    }
+>>>>>>> master
 
 
 @new_cache('detail')
@@ -116,13 +136,16 @@ def get_notice_detail(url):
         logging.warning(u'学院官网连接超时错误:%s' % e)
         return {}
     else:
+        content = ""
+        title = ""
+        date = ""
         if rows:
             title = rows.find(class_="title").find_all('h1')
             date = rows.find(class_="info")
             date = re.search('\d.*\d', str(date))[0]
             content = rows.find(class_="content")
             content = str(content).replace(
-                'src="/', 'src="http://www.gdust.cn/')
+                'src=\"/', 'src=\"http://www.gdust.cn/')
             content = b64encode(content.encode())
     return {
         'title': title,
