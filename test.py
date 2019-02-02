@@ -32,15 +32,16 @@ class TestCase(unittest.TestCase):
                 faculty = ''
 
             for page in range(1, 6):
-                ret = self.app.get(
-                    "%s?news_type=%s&page=%s&faculty=%s" %
-                    (config.LIST_URL, origin, page, faculty))
+                qurey_url = "%s?news_type=%s&page=%s&faculty=%s" %(config.LIST_URL, origin, page, faculty)
+                ret = self.app.get(qurey_url)
                 data = bytes.decode(ret.data)
+                print(qurey_url)
                 for content in ast.literal_eval(data)['data']:
                     url = content['url']
                     self.app.get(
                         "%s?type=%s&url=%s" %
                         (config.DETAIL_URL, origin, url))
+                    print(url)
                     time.sleep(1)
                 time.sleep(1)
 
