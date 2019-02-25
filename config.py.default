@@ -1,4 +1,4 @@
-REDDIS_URL = "redis://:@localhost:6379/0"
+REDIS_URL = "redis://:@localhost:6379/0"
 DEBUG = True
 NEWS_TYPE = {
     'xy': '/news/syyw/?page=',
