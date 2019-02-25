@@ -25,6 +25,7 @@ def get_news(origin, faculty, page=1):
     try:
         news_list = []
         r = requests.get(url, timeout=10)
+        r.encoding = 'uft-8'
         soup = BeautifulSoup(r.text, "html.parser")
         rows = soup.find(class_='article').find_all('li')
     except Exception as e:
@@ -145,4 +146,3 @@ def get_headline(faculty, page=1):
     news_list.sort(key=lambda element: element['time'], reverse=True)
 
     return news_list
-
