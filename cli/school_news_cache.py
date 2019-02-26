@@ -1,8 +1,13 @@
+import sys
+import os
+
+project = 'gdst_news'  # 工作项目根目录
+sys.path.append(os.getcwd().split(project)[0] + project)
+
 import requests
 import time
 from ast import literal_eval
 import config
-
 
 def main():
     for key in config.NEWS_TYPE.keys():
@@ -24,6 +29,7 @@ def main():
                 requests.get(
                     "%s?type=%s&url=%s" %
                     (config.DETAIL_URL, origin, url))
+                print(url)
                 time.sleep(1)
             time.sleep(1)
 
