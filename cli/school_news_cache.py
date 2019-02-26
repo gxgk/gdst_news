@@ -1,7 +1,7 @@
 import sys
 import os
 
-project = 'gdst_news'  # 工作项目根目录
+project = os.path.abspath(os.path.dirname(os.getcwd()))  # 工作项目根目录
 sys.path.append(os.getcwd().split(project)[0] + project)
 
 import requests
