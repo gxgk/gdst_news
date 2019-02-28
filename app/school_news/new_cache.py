@@ -41,11 +41,11 @@ def new_cache(storage_type, *args, **kwargs):
                 # url
                 result_1 = re.search('http://(.*?)/', url)
                 # 用于判断是是否是教务处新闻详细
-                if result_1[1] == 'www.gdst.cc':
-                    result_2 = re.search('(\d{8})\/(\d{4})', url)
-                    kw = result_2[1] + result_2[2]
+                if result_1.group(1) == 'www.gdust.cn':
+                    result_2 = re.search('(\d{8})\/(\d{1,4})', url)
+                    kw = result_2.group(1) + result_2.group(2)
                 else:
-                    kw = re.search('\&id\=(\d{1,3})', url)[1]
+                    kw = re.search('\&id\=(\d{1,3})', url).group(1)
 
                 data = redis_store.get(kw)
                 if not data:
@@ -59,3 +59,4 @@ def new_cache(storage_type, *args, **kwargs):
             return data
         return wrapper
     return decorator
+
