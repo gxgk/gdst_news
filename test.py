@@ -31,7 +31,7 @@ class TestCase(unittest.TestCase):
                 origin = key
                 faculty = ''
 
-            for page in range(1, 2):
+            for page in range(1, 1):
                 qurey_url = "%s?news_type=%s&page=%s&faculty=%s" %(config.LIST_URL, origin, page, faculty)
                 ret = self.app.get(qurey_url)
                 data = bytes.decode(ret.data)
