@@ -84,6 +84,8 @@ def get_news_detail(url):
         if rows:
             try:
                 title = rows.find(class_="title").string
+                if title is None:
+                    title = rows.find(class_="title").find('h1').string
 
             except BaseException:
                 suffix = re.search('(\d{4})\.html', url).group(1)

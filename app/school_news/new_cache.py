@@ -29,6 +29,7 @@ def new_cache(storage_type, *args, **kwargs):
                 data = redis_store.hget(name, key)
                 if data:
                     data = ast.literal_eval(bytes.decode(data))
+                    redis_store.expire(name,86400)
                     return data
                 else:
                     data = func(*args, **kwargs)
@@ -59,4 +60,3 @@ def new_cache(storage_type, *args, **kwargs):
             return data
         return wrapper
     return decorator
-
