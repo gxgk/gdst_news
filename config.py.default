@@ -13,3 +13,5 @@ NEWS_TYPE = {
 ORIGIN_TYPE = ['xy', 'xb', 'jw']
 LIST_URL = 'http://127.0.0.1:5000/news/list'
 DETAIL_URL = 'http://127.0.0.1:5000/news/detail'
+GZH_LIST = ['广科严选','东莞广科辩论队']
+
