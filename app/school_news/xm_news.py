@@ -1,10 +1,8 @@
-import requests
 import wechatsogou
-from bs4 import BeautifulSoup
 import logging
-from base64 import b64encode
 import config
 from urllib.parse import quote
+
 
 def xm_news_list():
     ws_api = wechatsogou.WechatSogouAPI(
@@ -20,20 +18,19 @@ def xm_news_list():
             return {}
         else:
             if history_list:
-                for n in range(0,3):
+                for n in range(0, 3):
                     news = {
-                        'type':'xm',
-                        'title':history_list['article'][n]['title'],
-                        'url':quote(history_list['article'][n]['content_url']),
-                        'time':history_list['gzh']['wechat_name']
-                    }
+                        'type': 'xm',
+                        'title': history_list['article'][n]['title'],
+                        'url': quote(
+                            history_list['article'][n]['content_url']),
+                        'time': history_list['gzh']['wechat_name']}
                     news_list.append(news)
 
     if news_list:
         return news_list
     else:
         return{}
-
 
 
 def xm_news_detail(url):
@@ -59,7 +56,7 @@ def xm_news_detail(url):
         return {}
 '''
 
-    return {'url':url}
+    return {'url': url}
 
 
 if __name__ == "__main__":
