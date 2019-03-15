@@ -1,6 +1,7 @@
 from flask import request
 import json
 from app.school_news import school_news
+from app.school_news import xm_news
 from urllib.parse import unquote
 import re
 from . import school_news_mod
@@ -13,8 +14,10 @@ def get_list_api():
     faculty = request.args.get('faculty')
     faculty = unquote(faculty)
     # 获取新闻或通告列表
-    if news_type != 'all':
+    if news_type not in ['all','xm']:
         list = school_news.get_news(news_type, faculty, page)
+    elif news_type == 'xm':
+        list = xm_news.xm_news_list()
     else:
         list = school_news.get_headline(faculty, page)
 
@@ -29,11 +32,13 @@ def get_list_api():
 def get_detail_api():
     url = request.args.get('url')
     # 获取新闻或者通告详细
+    news_type = request.args.get('type')
     url = unquote(url)
-    try:
-        if re.search('http://jwc.gdst.cc/', url)[0]:
-            detail = school_news.get_notice_detail(url)
-    except BaseException:
+    if news_type == 'jw':
+        detail = school_news.get_notice_detail(url)
+    elif news_type == 'xm':
+        detail = xm_news.xm_news_detail(url)
+    else:
         detail = school_news.get_news_detail(url)
 
     return json.dumps({'status': 200, 'data': detail})
