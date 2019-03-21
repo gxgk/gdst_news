@@ -31,49 +31,44 @@ def get_news(origin, faculty, page=1):
     else:
         r.encoding = 'uft-8'
         soup = BeautifulSoup(r.text, "html.parser")
-        try:
-            rows = soup.find(class_='article').find_all('li')
-        except AttributeError as a:
-            logging.warning(u'%s官网服务器出现问题:%s' % origin,a)
-            return{}
-        else:
-            '''
+        rows = soup.find(class_='article').find_all('li')
+        '''
         news_page = soup.find(class_='pageinfo').getText
         news_page = re.search("页次：(\d{1,2})\/",str(news_page))[1]
         if page == news_page:
         '''
-            news_list = []
-            for row in rows:
-                date = row.find(class_='date')
-                # 匹配时间
-                date = date.getText()
-                date.replace('/', '-')
-                title = row.a.string
-                url = row.a.attrs['href']
-                if url == '#':
-                    continue
-                elif origin == 'jw':
-                    url = quote(url)
-                    data = {
-                        'title': title,
-                        'url': url,
-                        'time': date,
-                        'type': origin
-                    }
+        news_list = []
+        for row in rows:
+            date = row.find(class_='date')
+            # 匹配时间
+            date = date.getText()
+            date.replace('/', '-')
+            title = row.a.string
+            url = row.a.attrs['href']
+            if url == '#':
+                continue
+            elif origin == 'jw':
+                url = quote(url)
+                data = {
+                    'title': title,
+                    'url': url,
+                    'time': date,
+                    'type': origin
+                }
 
-                    news_list.append(data)
-                else:
-                    url = quote(url)
-                    data = {
-                        'title': title,
-                        'url': u'http://www.gdust.cn' + url,
-                        'time': date,
-                        'type': origin
-                    }
+                news_list.append(data)
+            else:
+                url = quote(url)
+                data = {
+                    'title': title,
+                    'url': u'http://www.gdust.cn' + url,
+                    'time': date,
+                    'type': origin
+                }
 
                 news_list.append(data)
 
-            return news_list
+        return news_list
 
 
 @new_cache('detail')
@@ -86,37 +81,31 @@ def get_news_detail(url):
         return {}
     else:
         soup = BeautifulSoup(r.text.encode(r.encoding), 'html.parser')
-        try:
-            rows = soup.find(class_='articleinfor')
-        except AttributeError as a:
-            logging.warning(u'官网服务器出现问题:%s' % a)
-            return{}
-        else:
-            if rows:
-                try:
-                    title = rows.find(class_="title").string
-                    if title is None:
-                        title = rows.find(class_="title").find('h1').string
+        rows = soup.find(class_='articleinfor')
+        if rows:
+            try:
+                title = rows.find(class_="title").string
+                if title is None:
+                    title = rows.find(class_="title").find('h1').string
+            except BaseException:
+                suffix = re.search('(\d{4})\.html', url).group(1)
+                url = 'http://www.gdust.cn/index.aspx?lanmuid=63&sublanmuid=671&id=%s' % suffix
+                get_news_detail(url)
 
-                except BaseException:
-                    suffix = re.search('(\d{4})\.html', url).group(1)
-                    url = 'http://www.gdust.cn/index.aspx?lanmuid=63&sublanmuid=671&id=%s' % suffix
-                    get_news_detail(url)
+            else:
+                date = rows.find(class_="info")
+                date = re.search('\d.*\d', str(date)).group(0)
+                content = rows.find(class_="content")
+                content = str(content).replace(
+                    'src="/', 'src="http://www.gdust.cn/')
+                content = b64encode(content.encode())
+                html = bytes.decode(content)
 
-                else:
-                    date = rows.find(class_="info")
-                    date = re.search('\d.*\d', str(date)).group(0)
-                    content = rows.find(class_="content")
-                    content = str(content).replace(
-                        'src="/', 'src="http://www.gdust.cn/')
-                    content = b64encode(content.encode())
-                    html = bytes.decode(content)
-
-                    return {
-                        'title': title,
-                        'time': date,
-                        'html': html,
-                    }
+                return {
+                    'title': title,
+                    'time': date,
+                    'html': html,
+                }
 
 
 @new_cache('detail')
@@ -129,19 +118,14 @@ def get_notice_detail(url):
         return {}
     else:
         soup = BeautifulSoup(r.text.encode(r.encoding), 'html.parser')
-        try:
-            rows = soup.find(class_='article')
-        except AttributeError as a:
-            logging.warning(u'官网服务器出现问题:%s' % a)
-            return{}
-        else:
-            title = rows.find(class_="title").find_all('h1')
-            date = rows.find(class_="info")
-            date = re.search('\d.*\d', str(date)).group(0)
-            content = rows.find(class_="content")
-            content = str(content).replace(
-                'src="/', 'src="http://www.gdust.cn/')
-            content = b64encode(content.encode())
+        rows = soup.find(class_='articleinfor')
+        title = rows.find(class_="title").h1.string
+        date = rows.find(class_="info")
+        date = re.search('\d.*\d', str(date)).group(0)
+        content = rows.find(class_="content")
+        content = str(content).replace(
+            'src="/', 'src="http://www.gdust.cn/')
+        content = b64encode(content.encode())
     return {
         'title': title,
         'time': date,
