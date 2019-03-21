@@ -11,7 +11,7 @@ def xm_news_list():
         timeout=5
     )
     news_list = []
-    for gzh_name in config.GZH_LIST:
+    for gzh_name in config.NEWS_TYPE['xm']:
         try:
             history_list = ws_api.get_gzh_article_by_history(gzh_name,
                 identify_image_callback_sogou=rk.identify_image_callback_ruokuai_sogou,

@@ -24,7 +24,7 @@ class TestCase(unittest.TestCase):
     def test_requests(self):
         for key in config.NEWS_TYPE.keys():
             # 缓存列表
-            if key not in ['xy', 'jw']:
+            if key not in ['xy', 'jw','xm']:
                 origin = 'xb'
                 faculty = key
             else:
