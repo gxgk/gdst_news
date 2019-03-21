@@ -27,7 +27,7 @@ class TestCase(unittest.TestCase):
             if key not in ['xy', 'jw']:
                 origin = 'xb'
                 faculty = key
-            elif:
+            else:
                 origin = key
                 faculty = ''
 
