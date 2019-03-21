@@ -23,20 +23,21 @@ def get_news(origin, faculty, page=1):
         url = config.NEWS_TYPE[origin] + str(page)
 
     try:
-        news_list = []
         r = requests.get(url, timeout=10)
-        r.encoding = 'uft-8'
-        soup = BeautifulSoup(r.text, "html.parser")
-        rows = soup.find(class_='article').find_all('li')
     except Exception as e:
         logging.warning(u'学院官网连接超时错误:%s' % e)
         return {}
+
     else:
+        r.encoding = 'uft-8'
+        soup = BeautifulSoup(r.text, "html.parser")
+        rows = soup.find(class_='article').find_all('li')
         '''
         news_page = soup.find(class_='pageinfo').getText
         news_page = re.search("页次：(\d{1,2})\/",str(news_page))[1]
         if page == news_page:
         '''
+        news_list = []
         for row in rows:
             date = row.find(class_='date')
             # 匹配时间
@@ -67,7 +68,7 @@ def get_news(origin, faculty, page=1):
 
                 news_list.append(data)
 
-    return news_list
+        return news_list
 
 
 @new_cache('detail')
@@ -75,18 +76,17 @@ def get_news_detail(url):
     # 获取新闻详细
     try:
         r = requests.get(url, timeout=10)
-        soup = BeautifulSoup(r.text.encode(r.encoding), 'html.parser')
-        rows = soup.find(class_='articleinfor')
     except Exception as e:
         logging.warning(u'学院官网连接超时错误:%s' % e)
         return {}
     else:
+        soup = BeautifulSoup(r.text.encode(r.encoding), 'html.parser')
+        rows = soup.find(class_='articleinfor')
         if rows:
             try:
                 title = rows.find(class_="title").string
                 if title is None:
                     title = rows.find(class_="title").find('h1').string
-
             except BaseException:
                 suffix = re.search('(\d{4})\.html', url).group(1)
                 url = 'http://www.gdust.cn/index.aspx?lanmuid=63&sublanmuid=671&id=%s' % suffix
@@ -113,13 +113,13 @@ def get_notice_detail(url):
      # 获取教务处详细
     try:
         r = requests.get(url, timeout=10)
-        soup = BeautifulSoup(r.text.encode(r.encoding), 'html.parser')
-        rows = soup.find(class_='article')
     except Exception as e:
         logging.warning(u'学院官网连接超时错误:%s' % e)
         return {}
     else:
-        title = rows.find(class_="title").find_all('h1')
+        soup = BeautifulSoup(r.text.encode(r.encoding), 'html.parser')
+        rows = soup.find(class_='articleinfor')
+        title = rows.find(class_="title").h1.string
         date = rows.find(class_="info")
         date = re.search('\d.*\d', str(date)).group(0)
         content = rows.find(class_="content")

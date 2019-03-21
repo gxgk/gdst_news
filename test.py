@@ -24,7 +24,7 @@ class TestCase(unittest.TestCase):
     def test_requests(self):
         for key in config.NEWS_TYPE.keys():
             # 缓存列表
-            if key not in ['xy', 'jw']:
+            if key not in ['xy', 'jw','xm']:
                 origin = 'xb'
                 faculty = key
             else:
@@ -33,17 +33,24 @@ class TestCase(unittest.TestCase):
 
             for page in range(1, 2):
                 qurey_url = "%s?news_type=%s&page=%s&faculty=%s" %(config.LIST_URL, origin, page, faculty)
-                ret = self.app.get(qurey_url)
-                data = bytes.decode(ret.data)
-                print(qurey_url)
-                for content in ast.literal_eval(data)['data']:
-                    url = content['url']
-                    self.app.get(
-                        "%s?type=%s&url=%s" %
-                        (config.DETAIL_URL, origin, url))
-                    print(url)
+                if key == 'xm':
+                    self.app.get(qurey_url)
+                    print(qurey_url)
+                else:
+                    ret = self.app.get(qurey_url)
+                    data = bytes.decode(ret.data)
+                    print(qurey_url)
+                    for content in ast.literal_eval(data)['data']:
+                        url = content['url']
+                        self.app.get(
+                            "%s?type=%s&url=%s" %
+                            (config.DETAIL_URL, origin, url))
+                        print(url)
+                        time.sleep(1)
                     time.sleep(1)
-                time.sleep(1)
+
+
+
 
 
 if __name__ == '__main__':
