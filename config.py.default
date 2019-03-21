@@ -1,4 +1,4 @@
-REDIS_URL = "redis://:@localhost:6379/0"
+REDDIS_URL = "redis://:@localhost:6379/0"
 DEBUG = True
 NEWS_TYPE = {
     'xy': '/news/syyw/?page=',
@@ -13,5 +13,8 @@ NEWS_TYPE = {
 ORIGIN_TYPE = ['xy', 'xb', 'jw']
 LIST_URL = 'http://127.0.0.1:5000/news/list'
 DETAIL_URL = 'http://127.0.0.1:5000/news/detail'
-GZH_LIST = ['广科严选','东莞广科辩论队']
-
+GZH_LIST = ['广科严选','广科青年']
+RK_USERNAME = 'IKkssSDendi'
+RK_PASSWORD = 'wheneverhwp123'
+RK_ID = '125077'
+RK_KEY = '3078bc61631e425c910eb2c4037733d7'

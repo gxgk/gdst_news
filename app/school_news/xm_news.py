@@ -2,6 +2,7 @@ import wechatsogou
 import logging
 import config
 from urllib.parse import quote
+from . import rk
 
 
 def xm_news_list():
@@ -12,7 +13,9 @@ def xm_news_list():
     news_list = []
     for gzh_name in config.GZH_LIST:
         try:
-            history_list = ws_api.get_gzh_article_by_history(gzh_name)
+            history_list = ws_api.get_gzh_article_by_history(gzh_name,
+                identify_image_callback_sogou=rk.identify_image_callback_ruokuai_sogou,
+                identify_image_callback_weixin=rk.identify_image_callback_ruokuai_weixin)
         except Exception as e:
             logging.warning(u'无法爬取到公众号文章列表:%s' % e)
             return {}

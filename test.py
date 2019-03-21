@@ -27,23 +27,30 @@ class TestCase(unittest.TestCase):
             if key not in ['xy', 'jw']:
                 origin = 'xb'
                 faculty = key
-            else:
+            elif:
                 origin = key
                 faculty = ''
 
             for page in range(1, 1):
                 qurey_url = "%s?news_type=%s&page=%s&faculty=%s" %(config.LIST_URL, origin, page, faculty)
-                ret = self.app.get(qurey_url)
-                data = bytes.decode(ret.data)
-                print(qurey_url)
-                for content in ast.literal_eval(data)['data']:
-                    url = content['url']
-                    self.app.get(
-                        "%s?type=%s&url=%s" %
-                        (config.DETAIL_URL, origin, url))
-                    print(url)
+                if key == 'xm':
+                    self.app.get(qurey_url)
+                    print(qurey_url)
+                else:
+                    ret = self.app.get(qurey_url)
+                    data = bytes.decode(ret.data)
+                    print(qurey_url)
+                    for content in ast.literal_eval(data)['data']:
+                        url = content['url']
+                        self.app.get(
+                            "%s?type=%s&url=%s" %
+                            (config.DETAIL_URL, origin, url))
+                        print(url)
+                        time.sleep(1)
                     time.sleep(1)
-                time.sleep(1)
+
+
+
 
 
 if __name__ == '__main__':
