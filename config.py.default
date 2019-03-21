@@ -9,12 +9,12 @@ NEWS_TYPE = {
     '机电工程系': 'jdx/xbxw/xbdt/?page=',
     '艺术系': 'ysx/xbxw/xbdt/?page=',
     '财经系': 'cjx/xbxw/xbdt/?page=',
+    'xm': ['广科严选','广科青年']
 }
 ORIGIN_TYPE = ['xy', 'xb', 'jw']
 LIST_URL = 'http://127.0.0.1:5000/news/list'
 DETAIL_URL = 'http://127.0.0.1:5000/news/detail'
-GZH_LIST = ['广科严选','广科青年']
-RK_USERNAME = 'IKkssSDendi'
-RK_PASSWORD = 'wheneverhwp123'
-RK_ID = '125077'
-RK_KEY = '3078bc61631e425c910eb2c4037733d7'
+RK_USERNAME = ''
+RK_PASSWORD = ''
+RK_ID = ''
+RK_KEY = ''
