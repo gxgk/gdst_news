@@ -2,7 +2,7 @@ import wechatsogou
 import logging
 import config
 from urllib.parse import quote
-import rk
+from . import rk
 
 
 def xm_news_list():
