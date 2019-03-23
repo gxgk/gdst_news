@@ -6,10 +6,13 @@ from . import rk
 
 
 def xm_news_list():
+    headers = {
+       'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64)',
+    }
     ws_api = wechatsogou.WechatSogouAPI(
-        captcha_break_time=3,
-        timeout=5
-    )
+    headers=headers,
+    captcha_break_time=3,
+    timeout=5)
     news_list = []
     for gzh_name in config.NEWS_TYPE['xm']:
         try:
@@ -64,5 +67,4 @@ def xm_news_detail(url):
 
 if __name__ == "__main__":
     news_list = xm_news_list()
-    content = xm_news_detail(news_list[0])
-    print(content)
+    print(news_list)
