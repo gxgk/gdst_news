@@ -3,8 +3,8 @@ import json
 from app.school_news import school_news
 from app.school_news import xm_news
 from urllib.parse import unquote
-import re
 from . import school_news_mod
+import config
 
 
 @school_news_mod.route('/news/list', methods=['GET'])
@@ -17,9 +17,11 @@ def get_list_api():
     if news_type not in ['all','xm']:
         list = school_news.get_news(news_type, faculty, page)
     elif news_type == 'xm':
-        list = xm_news.xm_news_list()
+        list = xm_news.xm_news_list(config.NEWS_TYPE['xm'])
     else:
-        list = school_news.get_headline(faculty, page)
+        list_1 = xm_news.xm_news_list(['广科严选'])
+        list_2 = school_news.get_headline(faculty, page)
+        list = list_1 + list_2
 
     return json.dumps({
         'status': 200,
