@@ -5,7 +5,7 @@ from urllib.parse import quote
 from . import rk
 
 
-def xm_news_list():
+def xm_news_list(gzh_list):
     headers = {
        'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64)',
     }
@@ -14,7 +14,7 @@ def xm_news_list():
     captcha_break_time=3,
     timeout=5)
     news_list = []
-    for gzh_name in config.NEWS_TYPE['xm']:
+    for gzh_name in gzh_list:
         try:
             history_list = ws_api.get_gzh_article_by_history(gzh_name,
                 identify_image_callback_sogou=rk.identify_image_callback_ruokuai_sogou,
