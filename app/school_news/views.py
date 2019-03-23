@@ -19,9 +19,9 @@ def get_list_api():
     elif news_type == 'xm':
         list = xm_news.xm_news_list(config.NEWS_TYPE['xm'])
     else:
-        list_1 = xm_news.xm_news_list(['广科严选'])
-        list_2 = school_news.get_headline(faculty, page)
-        list = list_1 + list_2
+        #list_1 = xm_news.xm_news_list(['广科严选'])
+        list = school_news.get_headline(faculty, page)
+        #list = list_1 + list_2
 
     return json.dumps({
         'status': 200,
