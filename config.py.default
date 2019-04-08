@@ -13,4 +13,8 @@ NEWS_TYPE = {
 }
 ORIGIN_TYPE = ['xy', 'xb', 'jw']
 LIST_URL = 'http://127.0.0.1:5000/news/list'
-DETAIL_URL 
+DETAIL_URL = 'http://127.0.0.1:5000/news/detail'
+RK_USERNAME = ''
+RK_PASSWORD = ''
+RK_ID = ''
+RK_KEY = ''
