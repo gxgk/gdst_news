@@ -34,8 +34,10 @@ class TestCase(unittest.TestCase):
             for page in range(1, 1):
                 qurey_url = "%s?news_type=%s&page=%s&faculty=%s" %(config.LIST_URL, origin, page, faculty)
                 if key == 'xm':
-                    self.app.get(qurey_url)
-                    print(qurey_url)
+                    for gzh_name in config.NEWS_TYPE['xm']:
+                        qurey_url += '&gzh_name=%s' % gzh_name
+                        self.app.get(qurey_url)
+                        print(qurey_url)
                 else:
                     ret = self.app.get(qurey_url)
                     data = bytes.decode(ret.data)

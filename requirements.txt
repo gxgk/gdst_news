@@ -18,4 +18,4 @@ requests==2.21.0
 soupsieve==1.7.1
 urllib3==1.24.1
 Werkzeug==0.14.1
-wechatsogou==4.4.0
+wechatsogou==4.5.3

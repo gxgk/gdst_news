@@ -5,7 +5,7 @@ from urllib.parse import quote
 from . import rk
 
 
-def xm_news_list(gzh_list):
+def xm_news_list(gzh_name):
     headers = {
        'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64)',
     }
@@ -14,24 +14,23 @@ def xm_news_list(gzh_list):
     captcha_break_time=3,
     timeout=5)
     news_list = []
-    for gzh_name in gzh_list:
-        try:
-            history_list = ws_api.get_gzh_article_by_history(gzh_name,
-                identify_image_callback_sogou=rk.identify_image_callback_ruokuai_sogou,
-                identify_image_callback_weixin=rk.identify_image_callback_ruokuai_weixin)
-        except Exception as e:
-            logging.warning(u'无法爬取到公众号文章列表:%s' % e)
-            return {}
-        else:
-            if history_list:
-                for n in range(0, 3):
-                    news = {
-                        'type': 'xm',
-                        'title': history_list['article'][n]['title'],
-                        'url': quote(
-                            history_list['article'][n]['content_url']),
-                        'time': history_list['gzh']['wechat_name']}
-                    news_list.append(news)
+    try:
+        history_list = ws_api.get_gzh_article_by_history(gzh_name,
+            identify_image_callback_sogou=rk.identify_image_callback_ruokuai_sogou,
+            identify_image_callback_weixin=rk.identify_image_callback_ruokuai_weixin)
+    except Exception as e:
+        logging.warning(u'无法爬取到公众号文章列表:%s' % e)
+        return {}
+    else:
+        if history_list:
+            for n in range(0, 10):
+                news = {
+                    'type': 'xm',
+                    'title': history_list['article'][n]['title'],
+                    'url': quote(
+                        history_list['article'][n]['content_url']),
+                    'time': history_list['gzh']['wechat_name']}
+                news_list.append(news)
 
     if news_list:
         return news_list
