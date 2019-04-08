@@ -29,7 +29,7 @@ def xm_news_list(gzh_name):
                     'title': history_list['article'][n]['title'],
                     'url': quote(
                         history_list['article'][n]['content_url']),
-                    'time': history_list['gzh']['wechat_name']}
+                    'author': history_list['gzh']['wechat_name']}
                 news_list.append(news)
 
     if news_list:
