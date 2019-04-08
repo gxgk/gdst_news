@@ -12,7 +12,5 @@ NEWS_TYPE = {
     'xm': ['广科严选','广科青年']
 }
 ORIGIN_TYPE = ['xy', 'xb', 'jw']
-RK_USERNAME = ''
-RK_PASSWORD = ''
-RK_ID = ''
-RK_KEY = ''
+LIST_URL = 'http://127.0.0.1:5000/news/list'
+DETAIL_URL 
