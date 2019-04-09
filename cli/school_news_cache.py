@@ -21,14 +21,14 @@ def main():
 
         for page in range(1, 6):
             ret = requests.get(
-                "%s?news_type=%s&page=%s&faculty=%s&request_type=%s" %
-                (config.LIST_URL, origin, page, faculty,'cli'))
+                "%s?news_type=%s&page=%s&faculty=%s&force_reload=%s" %
+                (config.LIST_URL, origin, page, faculty,'1'))
             data = bytes.decode(ret.content)
             for content in literal_eval(data)['data']:
                 url = content['url']
                 requests.get(
-                    "%s?type=%s&url=%s&request_type=%s" %
-                    (config.DETAIL_URL, origin, url,'cli'))
+                    "%s?type=%s&url=%s&force_reload=%s" %
+                    (config.DETAIL_URL, origin, url,'1'))
                 print(url)
                 time.sleep(1)
             time.sleep(1)

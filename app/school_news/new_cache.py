@@ -30,12 +30,12 @@ def new_cache(storage_type, *args, **kwargs):
 
                 if data:
                     data = ast.literal_eval(bytes.decode(data))
-                    redis_store.expire(name,86400)
+                    redis_store.expire(name, 2592000)
                     return data
-                elif int(args_data[3]) == 1:
+                elif args_data[3]:
                     data = func(*args, **kwargs)
                     redis_store.hset(name, key, str(data))
-                    redis_store.expire(name, 86400)
+                    redis_store.expire(name, 2592000)
                     # 缓存过期时间为一天
 
                 else:
@@ -44,11 +44,9 @@ def new_cache(storage_type, *args, **kwargs):
                 else:
                     data = func(*args, **kwargs)
                     redis_store.hset(name, key, str(data))
-                    redis_store.expire(name, 86400)
-                    # 缓存过期时间为一天
+                    redis_store.expire(name, 2592000)
+                    # 缓存过期时间为30天
                 '''
-
-
 
             elif storage_type == 'detail':
                 # 缓存新闻详细
@@ -66,20 +64,20 @@ def new_cache(storage_type, *args, **kwargs):
                 data = redis_store.get(kw)
                 if data:
                     data = ast.literal_eval(bytes.decode(data))
+                    redis_store.expire(kw, 2592000)
                     return data
-                elif int(args[1]) == 1:
+                elif args[1]:
                     data = func(*args, **kwargs)
                     redis_store.set(kw, str(data))
-                    redis_store.expire(kw, 86400)
+                    redis_store.expire(kw, 2592000)
                 else:
                     return {}
                 '''
                 else:
                     data = func(*args, **kwargs)
                     redis_store.set(kw, str(data))
-                    redis_store.expire(kw, 86400)
+                    redis_store.expire(kw, 2592000)
                 '''
-
 
             return data
         return wrapper

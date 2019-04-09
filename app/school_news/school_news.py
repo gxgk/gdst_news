@@ -11,7 +11,7 @@ import config
 
 
 @new_cache('list')
-def get_news(origin, faculty, page=1,force_reload=0):
+def get_news(origin, faculty, page=1, force_reload=False):
     # 获取新闻列表,接受前端的请求的来源（院别）,页数默认为1，新闻获取数量为15条
     if origin == 'xy':
         url = 'http://www.gdust.cn/' + \
@@ -72,7 +72,7 @@ def get_news(origin, faculty, page=1,force_reload=0):
 
 
 @new_cache('detail')
-def get_news_detail(url,force_reload=0):
+def get_news_detail(url, force_reload=False):
     # 获取新闻详细
     try:
         r = requests.get(url, timeout=10)
@@ -109,7 +109,7 @@ def get_news_detail(url,force_reload=0):
 
 
 @new_cache('detail')
-def get_notice_detail(url,force_reload=0):
+def get_notice_detail(url, force_reload=False):
      # 获取教务处详细
     try:
         r = requests.get(url, timeout=10)
@@ -133,7 +133,7 @@ def get_notice_detail(url,force_reload=0):
     }
 
 
-def get_headline(faculty, page=1,force_reload=0):
+def get_headline(faculty, page=1):
     news_list = []
     for name in config.ORIGIN_TYPE:
         if name != 'xb':
