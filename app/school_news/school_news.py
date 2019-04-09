@@ -141,10 +141,14 @@ def get_headline(faculty, page=1):
         else:
             key = faculty + '_' + str(page)
 
-        data = ast.literal_eval(bytes.decode(redis_store.hget(name, key)))
-        for content in data:
-            news_list.append(content)
+        data = redis_store.hget(name, key)
+        if data:
+            data = ast.literal_eval(bytes.decode(data))
+            for content in data:
+                news_list.append(content)
+            news_list.sort(key=lambda element: element['time'], reverse=True)
 
-    news_list.sort(key=lambda element: element['time'], reverse=True)
+        else:
+            return {}
 
     return news_list
