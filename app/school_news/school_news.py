@@ -23,7 +23,7 @@ def get_news(origin, faculty, page=1,request_type=None):
         url = config.NEWS_TYPE[origin] + str(page)
 
     try:
-        r = requests.get(url, timeout=10)
+        r = requests.get(url, timeout=20)
     except Exception as e:
         logging.warning(u'学院官网连接超时错误:%s' % e)
         return {}
@@ -75,7 +75,7 @@ def get_news(origin, faculty, page=1,request_type=None):
 def get_news_detail(url,request_type=None):
     # 获取新闻详细
     try:
-        r = requests.get(url, timeout=10)
+        r = requests.get(url, timeout=20)
     except Exception as e:
         logging.warning(u'学院官网连接超时错误:%s' % e)
         return {}
@@ -112,7 +112,7 @@ def get_news_detail(url,request_type=None):
 def get_notice_detail(url,request_type=None):
      # 获取教务处详细
     try:
-        r = requests.get(url, timeout=10)
+        r = requests.get(url, timeout=20)
     except Exception as e:
         logging.warning(u'学院官网连接超时错误:%s' % e)
         return {}
