@@ -31,7 +31,7 @@ class TestCase(unittest.TestCase):
                 origin = key
                 faculty = ''
 
-            for page in range(1, 1):
+            for page in range(1, 2):
                 qurey_url = "%s?news_type=%s&page=%s&faculty=%s&request_type=%s" %(config.LIST_URL, origin, page, faculty,'test')
                 if key == 'xm':
                     for gzh_name in config.NEWS_TYPE['xm']:
@@ -45,8 +45,8 @@ class TestCase(unittest.TestCase):
                     for content in ast.literal_eval(data)['data']:
                         url = content['url']
                         self.app.get(
-                            "%s?type=%s&url=%s" %
-                            (config.DETAIL_URL, origin, url))
+                            "%s?type=%s&url=%s&request_type=%s" %
+                            (config.DETAIL_URL, origin, url,'test'))
                         print(url)
                         time.sleep(1)
                     time.sleep(1)

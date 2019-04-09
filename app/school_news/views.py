@@ -28,7 +28,7 @@ def get_list_api():
             list = xm_news.xm_news_list(gzh_name)
     else:
         #list_1 = xm_news.xm_news_list(['广科严选'])
-        list = school_news.get_headline(faculty, page)
+        list = school_news.get_headline(faculty, page,request_type)
         #list = list_1 + list_2
 
     return json.dumps({
@@ -44,11 +44,12 @@ def get_detail_api():
     # 获取新闻或者通告详细
     news_type = request.args.get('type')
     url = unquote(url)
+    request_type = request.args.get('request_type')
     if news_type == 'jw':
-        detail = school_news.get_notice_detail(url)
+        detail = school_news.get_notice_detail(url,request_type)
     elif news_type == 'xm':
         detail = xm_news.xm_news_detail(url)
     else:
-        detail = school_news.get_news_detail(url)
+        detail = school_news.get_news_detail(url,request_type)
 
     return json.dumps({'status': 200, 'data': detail})

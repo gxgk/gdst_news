@@ -53,6 +53,7 @@ def new_cache(storage_type, *args, **kwargs):
             elif storage_type == 'detail':
                 # 缓存新闻详细
                 url = args[0]
+                list_length = len(args)
                 # url
                 result_1 = re.search('http://(.*?)/', url)
                 # 用于判断是是否是教务处新闻详细
