@@ -12,6 +12,7 @@ import config
 
 @new_cache('list')
 def get_news(origin, faculty, page=1,request_type=None):
+    requests.adapters.DEFAULT_RETRIES = 5
     # 获取新闻列表,接受前端的请求的来源（院别）,页数默认为1，新闻获取数量为15条
     if origin == 'xy':
         url = 'http://www.gdust.cn/' + \
@@ -23,7 +24,7 @@ def get_news(origin, faculty, page=1,request_type=None):
         url = config.NEWS_TYPE[origin] + str(page)
 
     try:
-        r = requests.get(url, timeout=20)
+        r = requests.get(url, timeout=10)
     except Exception as e:
         logging.warning(u'学院官网连接超时错误:%s' % e)
         return {}
@@ -73,9 +74,10 @@ def get_news(origin, faculty, page=1,request_type=None):
 
 @new_cache('detail')
 def get_news_detail(url,request_type=None):
+    requests.adapters.DEFAULT_RETRIES = 5
     # 获取新闻详细
     try:
-        r = requests.get(url, timeout=20)
+        r = requests.get(url, timeout=10)
     except Exception as e:
         logging.warning(u'学院官网连接超时错误:%s' % e)
         return {}
@@ -110,9 +112,10 @@ def get_news_detail(url,request_type=None):
 
 @new_cache('detail')
 def get_notice_detail(url,request_type=None):
+    requests.adapters.DEFAULT_RETRIES = 5
      # 获取教务处详细
     try:
-        r = requests.get(url, timeout=20)
+        r = requests.get(url, timeout=10)
     except Exception as e:
         logging.warning(u'学院官网连接超时错误:%s' % e)
         return {}
