@@ -14,9 +14,10 @@ def get_list_api():
     faculty = request.args.get('faculty')
     faculty = unquote(faculty)
     gzh_name = request.args.get('gzh_name')
+    request_type = request.args.get('request_type')
     # 获取新闻或通告列表
     if news_type not in ['all','xm']:
-        list = school_news.get_news(news_type, faculty, page)
+        list = school_news.get_news(news_type, faculty, page,request_type)
     elif news_type == 'xm':
         if int(page) >= 2:
             return json.dumps({

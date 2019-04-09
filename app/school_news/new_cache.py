@@ -9,10 +9,10 @@ def new_cache(storage_type, *args, **kwargs):
     def decorator(func):
         def wrapper(*args, **kwargs):
             args_data = [data for data in args]
-            #args_data = ['origin','faculty','page']
+            #args_data = ['origin','faculty','page','request_type']
             '''
-            若是获取LIST，参数为 origin,faculty,page
-            若是获取DETAIL，参数为 url
+            若是获取LIST，参数为 origin,faculty,page,request_type
+            若是获取DETAIL，参数为 url,request_type
 
             '''
             if storage_type == 'list':
@@ -32,6 +32,11 @@ def new_cache(storage_type, *args, **kwargs):
                     data = ast.literal_eval(bytes.decode(data))
                     redis_store.expire(name,86400)
                     return data
+                elif args_data[3]:
+                    data = func(*args, **kwargs)
+                    redis_store.hset(name, key, str(data))
+                    redis_store.expire(name, 86400)
+                    # 缓存过期时间为一天
 
                 else:
                     return {}
@@ -61,6 +66,10 @@ def new_cache(storage_type, *args, **kwargs):
                 if data:
                     data = ast.literal_eval(bytes.decode(data))
                     return data
+                elif args[1]:
+                    data = func(*args, **kwargs)
+                    redis_store.set(kw, str(data))
+                    redis_store.expire(kw, 86400)
                 else:
                     return {}
                 '''
