@@ -9,10 +9,10 @@ def new_cache(storage_type, *args, **kwargs):
     def decorator(func):
         def wrapper(*args, **kwargs):
             args_data = [data for data in args]
-            #args_data = ['origin','faculty','page']
+            #args_data = ['origin','faculty','page','force_reload']
             '''
-            若是获取LIST，参数为 origin,faculty,page
-            若是获取DETAIL，参数为 url
+            若是获取LIST，参数为 origin,faculty,page,force_reload
+            若是获取DETAIL，参数为 url,request_type
 
             '''
             if storage_type == 'list':
@@ -27,18 +27,31 @@ def new_cache(storage_type, *args, **kwargs):
                     key = args_data[1] + "_" + args_data[2]
                     # faculty_page
                 data = redis_store.hget(name, key)
+
                 if data:
                     data = ast.literal_eval(bytes.decode(data))
-                    redis_store.expire(name,86400)
+                    redis_store.expire(name, 2592000)
                     return data
+                elif args_data[3]:
+                    data = func(*args, **kwargs)
+                    redis_store.hset(name, key, str(data))
+                    redis_store.expire(name, 2592000)
+                    # 缓存过期时间为一天
+
+                else:
+                    return {}
+                '''
                 else:
                     data = func(*args, **kwargs)
                     redis_store.hset(name, key, str(data))
-                    redis_store.expire(name, 86400)
-                    # 缓存过期时间为一天
+                    redis_store.expire(name, 2592000)
+                    # 缓存过期时间为30天
+                '''
+
             elif storage_type == 'detail':
                 # 缓存新闻详细
                 url = args[0]
+                list_length = len(args)
                 # url
                 result_1 = re.search('http://(.*?)/', url)
                 # 用于判断是是否是教务处新闻详细
@@ -49,13 +62,22 @@ def new_cache(storage_type, *args, **kwargs):
                     kw = re.search('\&id\=(\d{1,3})', url).group(1)
 
                 data = redis_store.get(kw)
-                if not data:
+                if data:
+                    data = ast.literal_eval(bytes.decode(data))
+                    redis_store.expire(kw, 2592000)
+                    return data
+                elif args[1]:
                     data = func(*args, **kwargs)
                     redis_store.set(kw, str(data))
-                    redis_store.expire(kw, 86400)
+                    redis_store.expire(kw, 2592000)
                 else:
-                    data = ast.literal_eval(bytes.decode(data))
-                    return data
+                    return {}
+                '''
+                else:
+                    data = func(*args, **kwargs)
+                    redis_store.set(kw, str(data))
+                    redis_store.expire(kw, 2592000)
+                '''
 
             return data
         return wrapper

@@ -11,7 +11,7 @@ import config
 
 
 @new_cache('list')
-def get_news(origin, faculty, page=1):
+def get_news(origin, faculty, page=1, force_reload=False):
     # 获取新闻列表,接受前端的请求的来源（院别）,页数默认为1，新闻获取数量为15条
     if origin == 'xy':
         url = 'http://www.gdust.cn/' + \
@@ -72,7 +72,7 @@ def get_news(origin, faculty, page=1):
 
 
 @new_cache('detail')
-def get_news_detail(url):
+def get_news_detail(url, force_reload=False):
     # 获取新闻详细
     try:
         r = requests.get(url, timeout=10)
@@ -109,7 +109,7 @@ def get_news_detail(url):
 
 
 @new_cache('detail')
-def get_notice_detail(url):
+def get_notice_detail(url, force_reload=False):
      # 获取教务处详细
     try:
         r = requests.get(url, timeout=10)
@@ -141,10 +141,14 @@ def get_headline(faculty, page=1):
         else:
             key = faculty + '_' + str(page)
 
-        data = ast.literal_eval(bytes.decode(redis_store.hget(name, key)))
-        for content in data:
-            news_list.append(content)
+        data = redis_store.hget(name, key)
+        if data:
+            data = ast.literal_eval(bytes.decode(data))
+            for content in data:
+                news_list.append(content)
+            news_list.sort(key=lambda element: element['time'], reverse=True)
 
-    news_list.sort(key=lambda element: element['time'], reverse=True)
+        else:
+            return {}
 
     return news_list
