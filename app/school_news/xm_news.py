@@ -5,15 +5,18 @@ from urllib.parse import quote
 from . import rk
 
 
-def xm_news_list(gzh_name):
-    headers = {
-       'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64)',
-    }
-    ws_api = wechatsogou.WechatSogouAPI(
-    headers=headers,
-    captcha_break_time=3,
-    timeout=5)
-    news_list = []
+def xm_news_list(gzh_name,page):
+    if page != '1':
+        return{}
+    else:
+        headers = {
+        'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64)',
+        }
+        ws_api = wechatsogou.WechatSogouAPI(
+        headers=headers,
+        captcha_break_time=3,
+        timeout=5)
+        news_list = []
     try:
         history_list = ws_api.get_gzh_article_by_history(gzh_name,
             identify_image_callback_sogou=rk.identify_image_callback_ruokuai_sogou,
