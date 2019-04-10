@@ -32,8 +32,12 @@ class TestCase(unittest.TestCase):
                 faculty = ''
 
             for page in range(1, 2):
+<<<<<<< HEAD
                 qurey_url = "%s?news_type=%s&page=%s&faculty=%s&force_reload=%s" % (
                     config.LIST_URL, origin, page, faculty, '1')
+=======
+                qurey_url = "%s?news_type=%s&page=%s&faculty=%s" %(config.LIST_URL, origin, page, faculty)
+>>>>>>> master
                 if key == 'xm':
                     for gzh_name in config.NEWS_TYPE['xm']:
                         qurey_url += '&gzh_name=%s' % gzh_name
