@@ -13,14 +13,11 @@ def get_list_api():
     faculty = request.args.get('faculty')
     faculty = unquote(faculty)
     gzh_name = request.args.get('gzh_name')
-    force_reload = request.args.get('force_reload')
-    if force_reload == '1':
-        force_reload = True
-    else:
-        force_reload = False
+    force_reload = request.args.get('force_reload', 0, type=int)
     # 获取新闻或通告列表
     if news_type not in ['all', 'xm']:
-        list = school_news.get_news(news_type, faculty, page, force_reload)
+        list = school_news.get_news(
+            news_type, faculty, page, bool(force_reload))
     elif news_type == 'xm':
         if int(page) >= 2:
             return json.dumps({
@@ -31,7 +28,7 @@ def get_list_api():
             list = xm_news.xm_news_list(gzh_name)
     else:
         #list_1 = xm_news.xm_news_list(['广科严选'])
-        list = school_news.get_headline(faculty, page, force_reload)
+        list = school_news.get_headline(faculty, page)
         #list = list_1 + list_2
 
     return json.dumps({
@@ -47,12 +44,12 @@ def get_detail_api():
     # 获取新闻或者通告详细
     news_type = request.args.get('type')
     url = unquote(url)
-    force_reload = request.args.get('force_reload')
+    force_reload = request.args.get('force_reload', 0, type=int)
     if news_type == 'jw':
-        detail = school_news.get_notice_detail(url, force_reload)
+        detail = school_news.get_notice_detail(url, bool(force_reload))
     elif news_type == 'xm':
         detail = xm_news.xm_news_detail(url)
     else:
-        detail = school_news.get_news_detail(url, force_reload)
+        detail = school_news.get_news_detail(url, bool(force_reload))
 
     return json.dumps({'status': 200, 'data': detail})
