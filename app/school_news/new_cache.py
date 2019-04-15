@@ -28,15 +28,15 @@ def new_cache(storage_type, *args, **kwargs):
                     # faculty_page
                 data = redis_store.hget(name, key)
 
-                if data:
-                    data = ast.literal_eval(bytes.decode(data))
-                    redis_store.expire(name, 2592000)
-                    return data
-                elif args_data[3]:
+                if args_data[3]:
                     data = func(*args, **kwargs)
                     redis_store.hset(name, key, str(data))
                     redis_store.expire(name, 2592000)
-                    # 缓存过期时间为一天
+                    # 缓存过期时间为30天
+                elif data:
+                    data = ast.literal_eval(bytes.decode(data))
+                    redis_store.expire(name, 2592000)
+                    return data
 
                 else:
                     return {}
@@ -62,14 +62,14 @@ def new_cache(storage_type, *args, **kwargs):
                     kw = re.search('\&id\=(\d{1,3})', url).group(1)
 
                 data = redis_store.get(kw)
-                if data:
-                    data = ast.literal_eval(bytes.decode(data))
-                    redis_store.expire(kw, 2592000)
-                    return data
-                elif args[1]:
+                if args[1]:
                     data = func(*args, **kwargs)
                     redis_store.set(kw, str(data))
                     redis_store.expire(kw, 2592000)
+                elif data:
+                    data = ast.literal_eval(bytes.decode(data))
+                    redis_store.expire(kw, 2592000)
+                    return data
                 else:
                     return {}
                 '''
