@@ -1,15 +1,16 @@
 from flask import Flask
 from flask_redis import FlaskRedis
-from raven.contrib.flask import Sentry
+import sentry_sdk
+from sentry_sdk.integrations.flask import FlaskIntegration
 import config
 
 redis_store = FlaskRedis()
 
 
 def create_app():
+    sentry_sdk.init(dsn=config.SENTRY_DNS,integrations=[FlaskIntegration()])
     app = Flask(__name__, instance_relative_config=False)
     app.config.from_object('config')
-    sentry = Sentry(app, dsn=config.SENTRY_DNS)
 
     from app.school_news import school_news_mod
     app.register_blueprint(school_news_mod)
