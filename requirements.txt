@@ -19,3 +19,4 @@ soupsieve==1.7.1
 urllib3==1.24.1
 Werkzeug==0.14.1
 wechatsogou==4.5.4
+raven==6.10.0
