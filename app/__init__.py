@@ -8,7 +8,7 @@ redis_store = FlaskRedis()
 
 
 def create_app():
-    sentry_sdk.init(dsn=config.SENTRY_DNS,integrations=[FlaskIntegration()])
+    sentry_sdk.init(dsn=config.SENTRY_DSN,integrations=[FlaskIntegration()])
     app = Flask(__name__, instance_relative_config=False)
     app.config.from_object('config')
 
