@@ -1,4 +1,4 @@
-REDIS_URL = "redis://:@localhost:6379/0"
+REDDIS_URL = "redis://:@localhost:6379/0"
 DEBUG = True
 NEWS_TYPE = {
     'xy': '/news/syyw/?page=',
@@ -18,3 +18,4 @@ RK_USERNAME = ''
 RK_PASSWORD = ''
 RK_ID = ''
 RK_KEY = ''
+SENTRY_DNS = 'https://9f470bbae23145b1b1ad402405ad310d:f7a19ed055d340508bdac85f71427b46@sentry.gxgk.cc/5'
