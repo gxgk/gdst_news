@@ -20,3 +20,4 @@ urllib3==1.24.1
 Werkzeug==0.14.1
 wechatsogou==4.5.4
 sentry-sdk==0.7.10
+blinker
