@@ -11,11 +11,13 @@ greenlet==0.4.15
 gunicorn==19.9.0
 idna==2.8
 itsdangerous==1.1.0
-Jinja2==2.10
+Jinja2==2.10.1
 MarkupSafe==1.1.0
 redis==3.0.1
 requests==2.21.0
 soupsieve==1.7.1
 urllib3==1.24.1
 Werkzeug==0.14.1
+wechatsogou==4.5.4
+sentry-sdk==0.7.10
 blinker
