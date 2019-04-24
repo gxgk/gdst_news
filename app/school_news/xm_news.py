@@ -1,6 +1,5 @@
 import wechatsogou
 import logging
-import config
 from urllib.parse import quote
 from . import rk
 
