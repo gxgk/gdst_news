@@ -151,8 +151,8 @@ def get_headline(faculty, page=1):
     news_list.sort(key=lambda element: element['time'], reverse=True)
     xm_news = xm.xm_news_list('广科严选', page)
     if xm_news:
-        while xm_news:
-            data = xm_news.pop()
-            news_list.insert(0, data)
+        for data in xm_news:
+            if data:
+                news_list.insert(0, data)
 
     return news_list
