@@ -21,9 +21,7 @@ def get_list_api():
     elif news_type == 'xm':
         list = xm_news.xm_news_list(gzh_name,page)
     else:
-        list_1 = xm_news.xm_news_list(['广科严选'],page)
-        list_2 = school_news.get_headline(faculty, page)
-        list = list_1 + list_2
+        list = school_news.get_headline(faculty, page)
 
     return json.dumps({
         'status': 200,

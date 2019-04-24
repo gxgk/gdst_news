@@ -8,6 +8,7 @@ import re
 from app import redis_store
 import ast
 import config
+from . import xm_news as xm
 
 
 @new_cache('list')
@@ -146,9 +147,11 @@ def get_headline(faculty, page=1):
             data = ast.literal_eval(bytes.decode(data))
             for content in data:
                 news_list.append(content)
-            news_list.sort(key=lambda element: element['time'], reverse=True)
 
-        else:
-            return {}
+    news_list.sort(key=lambda element: element['time'], reverse=True)
+    xm_news = xm.xm_news_list('广科严选', page)
+    if xm_news:
+        xm_news.append(news_list)
+        news_list = xm_news
 
     return news_list
