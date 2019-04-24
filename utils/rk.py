@@ -1,7 +1,8 @@
-import config
-import os
 from hashlib import md5
+
 import requests
+
+import config
 
 
 class RClient(object):
