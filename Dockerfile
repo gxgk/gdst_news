@@ -9,7 +9,7 @@ WORKDIR /var/www/gdst_news
 RUN /bin/cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
     && echo 'Asia/Shanghai' > /etc/timezone
 ADD requirements.txt .
-# RUN pip install -U pip && pip install -r requirements.txt -i http://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com
-RUN pip install -U pip && pip install -r requirements.txt
+RUN pip install -U pip && pip install -r requirements.txt -i http://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com
+#RUN pip install -U pip && pip install -r requirements.txt
 
 ADD . /var/www/gdst_news

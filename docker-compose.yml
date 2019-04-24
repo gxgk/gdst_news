@@ -12,3 +12,4 @@ services:
       - .:/var/www/gdst_news
     external_links:
         - "redis:redis_url"
+    restart: always

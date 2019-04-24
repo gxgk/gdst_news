@@ -30,7 +30,7 @@ def new_cache(storage_type, *args, **kwargs):
 
                 if args_data[3]:
                     data = func(*args, **kwargs)
-                    redis_store.hset(name, key, data)
+                    redis_store.hset(name, key, str(data))
                     redis_store.expire(name, 2592000)
                     # 缓存过期时间为30天
                 elif data:
