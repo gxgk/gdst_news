@@ -62,13 +62,9 @@ def cache_mp_article(mp_name):
         return None
     cache_key = "cache_mp_article?mp_name=%s" % mp_name
 
-    # 读取全部旧数据
-    old_data_list = redis_store.zrevrange(cache_key, 0, -1)
-    datetime_list = [json.loads(data)['datetime'] for data in old_data_list]
+    # 删除全部旧数据
+    redis_store.delete(cache_key)
     mapping = {}
     for data in data_list:
-        if data['datetime'] not in datetime_list:
-            mapping.update({json.dumps(data): data['datetime']})
-    if mapping != {}:
-        # 加入增量
-        redis_store.zadd(cache_key, mapping)
+        mapping.update({json.dumps(data): data['datetime']})
+    redis_store.zadd(cache_key, mapping)
