@@ -1,0 +1,21 @@
+REDIS_URL = "redis://:@localhost:6379/0"
+DEBUG = True
+NEWS_TYPE = {
+    'xy': '/news/syyw/?page=',
+    'jw': 'http://jwc.gdst.cc/jiaowuchu/index.aspx?lanmuid=94&sublanmuid=677&page=',
+    '应用英语系': 'yyx/xbxw/xbdt/?page=',
+    '计算机系': 'jsjx/xbxw/xbdt/?page=',
+    '管理系': 'glx/xbxw/xbdt/?page=',
+    '机电工程系': 'jdx/xbxw/xbdt/?page=',
+    '艺术系': 'ysx/xbxw/xbdt/?page=',
+    '财经系': 'cjx/xbxw/xbdt/?page=',
+    'xm':''
+}
+ORIGIN_TYPE = ['xy', 'xb', 'jw']
+LIST_URL = 'http://127.0.0.1:5000/news/list'
+DETAIL_URL = 'http://127.0.0.1:5000/news/detail'
+RK_USERNAME = ''
+RK_PASSWORD = ''
+RK_ID = ''
+RK_KEY = ''
+SENTRY_DSN = ''
