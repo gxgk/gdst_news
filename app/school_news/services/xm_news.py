@@ -1,70 +1,95 @@
+import requests
 import logging
-import config
-import wechatsogou
-import pickle
-import json
+from app import redis_store
+from bs4 import BeautifulSoup
+import base64
+import ast
 from urllib.parse import quote
-from app.extensions import redis_store
-from utils import rk
+
+redis_plugin_prefix = 'wechat:plugins:news:xiaomiao'
 
 
-def xm_news_list(page, force_reload=False):
-    article_list = []
-    for mp_name in config.MP_ARTICLE_LIST:
-        cache_key = "cache_mp_article?mp_name=%s" % mp_name
-        page_size = config.PAGE_SIZE
-        data_list = redis_store.zrevrange(cache_key, (page - 1) * page_size, page * page_size - 1)
-        if (not data_list and page <= 1) or force_reload is True:
-            cache_mp_article(mp_name)
-            data_list = redis_store.zrevrange(cache_key, (page - 1) * page_size, page * page_size - 1)
-        for data in data_list:
-            article_list.append(json.loads(data))
-    return article_list
+def update_cache():
+    url = 'http://mp.weixin.qq.com/mp/homepage' \
+        '?__biz=MzI1MzA1MzQ0MA==&hid=3' \
+        '&sn=2058fc67f54c5b913396dab4db8149ff'
+    url = 'http://mp.weixin.qq.com/mp/homepage' \
+        '?__biz=MzI1MzA1MzQ0MA==&hid=3' \
+        '&sn=2058fc67f54c5b913396dab4db8149ff'
 
-
-def crawler_mp_article(gzh_name):
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64)',
-    }
-    ws_api = wechatsogou.WechatSogouAPI(
-        headers=headers,
-        captcha_break_time=3,
-        timeout=5)
-    news_list = []
+    session = requests.Session()
+    session.headers.update({
+        'User-Agent': 'Mozilla/5.0 (compatible; MSIE 10.0; ' +
+        'Windows NT 6.2; Trident/6.0)'
+    })
     try:
-        history = ws_api.get_gzh_article_by_history(gzh_name,
-                                                    identify_image_callback_sogou=rk.identify_image_callback_ruokuai_sogou,
-                                                    identify_image_callback_weixin=rk.identify_image_callback_ruokuai_weixin)
-        if not history:
-            return None
-        gzh = history.get('gzh')
-        history_list = history.get('article')
+        res = session.get(url, timeout=6)
+        url = url + '&begin=0&count=29&action=appmsg_list&f=json'
+        res = session.post(url, timeout=6)
+        appmsg_list = res.json()['appmsg_list']
     except Exception as e:
-        logging.warning(u'无法爬取到公众号文章列表:%s' % e)
-        return None
-    else:
-        for n, history in enumerate(history_list):
-            news = {
-                'type': 'xm',
-                'title': history['title'],
-                'url': quote(history['content_url']),
-                'author': gzh.get('wechat_name'),
-                'datetime': history['datetime']
-            }
-            news_list.append(news)
+        logging.warning(u'连接超时出错：%s' % e)
+        return {}
+    news_list = []
+    for appmsg in appmsg_list:
 
-    return news_list
+        try:
+            res = session.get(appmsg['link'], timeout=6)
+            soup = BeautifulSoup(res.content, "html.parser")
+            title = soup.find(id='activity-name').getText().encode('utf-8')
+            title = str(title, encoding='utf-8')
+            originate = soup.find(
+                id='js_preview_reward_author_name').getText().encode('utf-8')
+            content = soup.find(id='js_content')
+        except Exception as e:
+            continue
+        # 匹配时间
+        news_data = {
+            "title": appmsg['title'],
+            "url": quote(appmsg['link']),
+            "articleid": appmsg['aid'],
+            "type": "xm",
+        }
+        news_list.append(news_data)
+        textbody = str(content).replace('src="/', 'src="http://mmbiz.qpic.cn/')
+        data = {
+            'author': '小喵',
+            'title': title.strip(),
+            'body': content.getText(),
+            'html': str(
+                base64.b64encode(
+                    bytes(
+                        textbody,
+                        encoding='utf8')),
+                encoding='utf-8'),
+            "originate": str(
+                originate.strip(),
+                encoding='utf-8')}
+        redis_store.set(redis_plugin_prefix + ':list', news_list, 3600 * 10)
+        redis_prefix = redis_plugin_prefix + ':detail:id:' + appmsg['aid']
+        redis_store.set(redis_prefix, data, 3600 * 10)
 
 
-def cache_mp_article(mp_name):
-    data_list = crawler_mp_article(mp_name)
-    if not data_list:
-        return None
-    cache_key = "cache_mp_article?mp_name=%s" % mp_name
+def get_list(page=1):
+    page = int(page)
+    if page >= 3:
+        return {'end': ''}
+    list_cache = redis_store.get(redis_plugin_prefix + ':list')
+    if not list_cache:
+        update_cache()
+        list_cache = redis_store.get(redis_plugin_prefix + ':list')
+    cache = ast.literal_eval(str(list_cache, encoding='utf-8'))
+    cache_list = []
+    for i in range(0, len(cache), 10):
+        cache_list.append(cache[i:i + 10])
+    return cache_list[page - 1]
 
-    # 删除全部旧数据
-    redis_store.delete(cache_key)
-    mapping = {}
-    for data in data_list:
-        mapping.update({json.dumps(data): data['datetime']})
-    redis_store.zadd(cache_key, mapping)
+
+def get_detail(news_id):
+    redis_prefix = redis_plugin_prefix + ':detail:id:' + news_id
+    cache = redis_store.get(redis_prefix)
+    if not cache:
+        update_cache()
+    cache = redis_store.get(redis_prefix)
+    cache_detial = ast.literal_eval(str(cache, encoding='utf-8'))
+    return cache_detial
