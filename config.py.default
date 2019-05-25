@@ -8,8 +8,8 @@ NEWS_TYPE = {
     '管理系': 'glx/xbxw/xbdt/?page=',
     '机电工程系': 'jdx/xbxw/xbdt/?page=',
     '艺术系': 'ysx/xbxw/xbdt/?page=',
-    '财经系': 'cjx/xbxw/xbdt/?page=',
-    'xm': ['广科严选','广科青年']
+    '财经系': 'cjx/xbxw/xbdt/?page='
+    'xm':'
 }
 ORIGIN_TYPE = ['xy', 'xb', 'jw']
 LIST_URL = 'http://127.0.0.1:5000/news/list'
@@ -18,4 +18,6 @@ RK_USERNAME = ''
 RK_PASSWORD = ''
 RK_ID = ''
 RK_KEY = ''
-SENTRY_DSN = 'https://9f470bbae23145b1b1ad402405ad310d:f7a19ed055d340508bdac85f71427b46@sentry.gxgk.cc/5'
+SENTRY_DSN = ''
+MP_ARTICLE_LIST = ['gxgk_top']
+PAGE_SIZE = 10

@@ -8,7 +8,7 @@ import re
 from app import redis_store
 import ast
 import config
-from . import xm_news as xm
+from app.school_news.services import xm_news as xm
 
 
 @new_cache('list')
