@@ -34,23 +34,22 @@ class TestCase(unittest.TestCase):
             for page in range(1, 2):
                 qurey_url = "%s?news_type=%s&page=%s&faculty=%s&force_reload=%s" % (
                     config.LIST_URL, origin, page, faculty, '1')
-                if key == 'xm':
-                    for gzh_name in config.NEWS_TYPE['xm']:
-                        qurey_url += '&gzh_name=%s' % gzh_name
-                        self.app.get(qurey_url)
-                        print(qurey_url)
-                else:
-                    ret = self.app.get(qurey_url)
-                    data = bytes.decode(ret.data)
-                    print(qurey_url)
-                    for content in ast.literal_eval(data)['data']:
-                        url = content['url']
+                ret = self.app.get(qurey_url)
+                data = bytes.decode(ret.data)
+                print(qurey_url)
+                for content in ast.literal_eval(data)['data']:
+                    url = content['url']
+                    if origin == 'xm':
+                        self.app.get(
+                        "%s?type=%s&url=%s&articleid=%s&force_reload=%s" %
+                        (config.DETAIL_URL, origin, url,content['articleid'], '1'))
+                    else:
                         self.app.get(
                             "%s?type=%s&url=%s&force_reload=%s" %
                             (config.DETAIL_URL, origin, url, '1'))
-                        print(url)
-                        time.sleep(1)
+                    print(url)
                     time.sleep(1)
+                time.sleep(1)
 
 
 if __name__ == '__main__':

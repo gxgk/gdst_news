@@ -19,7 +19,12 @@ def get_list_api():
         list = school_news.get_news(
             news_type, faculty, page, bool(force_reload))
     elif news_type == 'xm':
-        list = xm_news.xm_news_list(gzh_name,page)
+        if page != '1':
+            return{
+                'status':200,
+                'data':''
+            }
+        list = xm_news.get_list()
     else:
         list = school_news.get_headline(faculty, page)
 
@@ -33,15 +38,17 @@ def get_list_api():
 # 接受新闻内容URL
 def get_detail_api():
     url = request.args.get('url')
+    news_id = request.args.get('articleid')
     # 获取新闻或者通告详细
     news_type = request.args.get('type')
-    url = unquote(url)
     force_reload = request.args.get('force_reload', 0, type=int)
     if news_type == 'jw':
+        url = unquote(url)
         detail = school_news.get_notice_detail(url, bool(force_reload))
     elif news_type == 'xm':
-        detail = xm_news.xm_news_detail(url)
+        detail = xm_news.get_detail(news_id)
     else:
+        url = unquote(url)
         detail = school_news.get_news_detail(url, bool(force_reload))
 
     return json.dumps({'status': 200, 'data': detail})

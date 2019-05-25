@@ -1,71 +1,95 @@
-import wechatsogou
+import requests
 import logging
+from app import redis_store
+from bs4 import BeautifulSoup
+import base64
+import ast
 from urllib.parse import quote
-from . import rk
+
+redis_plugin_prefix = 'wechat:plugins:news:xiaomiao'
 
 
-def xm_news_list(gzh_name,page):
-    if page != '1':
-        return{}
-    else:
-        headers = {
-        'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64)',
+def update_cache():
+    url = 'http://mp.weixin.qq.com/mp/homepage' \
+        '?__biz=MzI1MzA1MzQ0MA==&hid=3' \
+        '&sn=2058fc67f54c5b913396dab4db8149ff'
+    url = 'http://mp.weixin.qq.com/mp/homepage' \
+        '?__biz=MzI1MzA1MzQ0MA==&hid=3' \
+        '&sn=2058fc67f54c5b913396dab4db8149ff'
+
+    session = requests.Session()
+    session.headers.update({
+        'User-Agent': 'Mozilla/5.0 (compatible; MSIE 10.0; ' +
+        'Windows NT 6.2; Trident/6.0)'
+    })
+    try:
+        res = session.get(url, timeout=6)
+        url = url + '&begin=0&count=29&action=appmsg_list&f=json'
+        res = session.post(url, timeout=6)
+        appmsg_list = res.json()['appmsg_list']
+    except Exception as e:
+        logging.warning(u'连接超时出错：%s' % e)
+        return {}
+    news_list = []
+    for appmsg in appmsg_list:
+
+        try:
+            res = session.get(appmsg['link'], timeout=6)
+            soup = BeautifulSoup(res.content, "html.parser")
+            title = soup.find(id='activity-name').getText().encode('utf-8')
+            title = str(title, encoding='utf-8')
+            originate = soup.find(
+                id='js_preview_reward_author_name').getText().encode('utf-8')
+            content = soup.find(id='js_content')
+        except Exception as e:
+            continue
+        # 匹配时间
+        news_data = {
+            "title": appmsg['title'],
+            "url": quote(appmsg['link']),
+            "articleid": appmsg['aid'],
+            "type": "xm",
         }
-        ws_api = wechatsogou.WechatSogouAPI(
-        headers=headers,
-        captcha_break_time=3,
-        timeout=5)
-        news_list = []
-    try:
-        history_list = ws_api.get_gzh_article_by_history(gzh_name,
-            identify_image_callback_sogou=rk.identify_image_callback_ruokuai_sogou,
-            identify_image_callback_weixin=rk.identify_image_callback_ruokuai_weixin)
-    except Exception as e:
-        logging.warning(u'无法爬取到公众号文章列表:%s' % e)
-        return {}
-    else:
-        if history_list:
-            for n in range(0, 10):
-                news = {
-                    'type': 'xm',
-                    'title': history_list['article'][n]['title'],
-                    'url': quote(
-                        history_list['article'][n]['content_url']),
-                    'author': history_list['gzh']['wechat_name']}
-                news_list.append(news)
-
-    if news_list:
-        return news_list
-    else:
-        return{}
+        news_list.append(news_data)
+        textbody = str(content).replace('src="/', 'src="http://mmbiz.qpic.cn/')
+        data = {
+            'author': '小喵',
+            'title': title.strip(),
+            'body': content.getText(),
+            'html': str(
+                base64.b64encode(
+                    bytes(
+                        textbody,
+                        encoding='utf8')),
+                encoding='utf-8'),
+            "originate": str(
+                originate.strip(),
+                encoding='utf-8')}
+        redis_store.set(redis_plugin_prefix + ':list', news_list, 3600 * 10)
+        redis_prefix = redis_plugin_prefix + ':detail:id:' + appmsg['aid']
+        redis_store.set(redis_prefix, data, 3600 * 10)
 
 
-def xm_news_detail(url):
-    '''
-    try:
-        r = requests.get(url)
-    except Exception as e:
-        logging.warning(u'无法爬取到文章详细:%s' % e)
-        return {}
-    else:
-        soup = BeautifulSoup(r.text.encode(r.encoding), 'html.parser')
-        rows = soup.find(class_='rich_media_area_primary_inner')
-        title = rows.h2.string
-        author = rows.a.string
-        title = str(title).replace('\n','')
-        title = str(title).replace(' ','')
-        author = str(author).replace('\n','')
-        author = str(author).replace(' ','')
-        content = rows.find(class_='rich_media_content')
-        content = b64encode(content.encode())
-        html = bytes.decode(content)
-
-        return {}
-'''
-
-    return {'url': url}
+def get_list(page=1):
+    page = int(page)
+    if page >= 3:
+        return {'end': ''}
+    list_cache = redis_store.get(redis_plugin_prefix + ':list')
+    if not list_cache:
+        update_cache()
+        list_cache = redis_store.get(redis_plugin_prefix + ':list')
+    cache = ast.literal_eval(str(list_cache, encoding='utf-8'))
+    cache_list = []
+    for i in range(0, len(cache), 10):
+        cache_list.append(cache[i:i + 10])
+    return cache_list[page - 1]
 
 
-if __name__ == "__main__":
-    news_list = xm_news_list()
-    print(news_list)
+def get_detail(news_id):
+    redis_prefix = redis_plugin_prefix + ':detail:id:' + news_id
+    cache = redis_store.get(redis_prefix)
+    if not cache:
+        update_cache()
+    cache = redis_store.get(redis_prefix)
+    cache_detial = ast.literal_eval(str(cache, encoding='utf-8'))
+    return cache_detial
