@@ -8,7 +8,8 @@ redis_plugin_prefix = 'wechat:plugins:news:xiaomiao'
 
 
 def update_cache():
-    url = 'http://mp.weixin.qq.com/mp/homepage?__biz=MzI1MzA1MzQ0MA==&hid=3&sn=2058fc67f54c5b913396dab4db8149ff&begin=0&count=29&action=appmsg_list&f=json'
+    url = 'http://mp.weixin.qq.com/mp/homepage?__biz=MzI1MzA1MzQ0MA==&' \
+          'hid=3&sn=2058fc67f54c5b913396dab4db8149ff&begin=0&count=29&action=appmsg_list&f=json'
     headers = {
         'User-Agent': 'Mozilla/5.0 (compatible; MSIE 10.0; ' +
         'Windows NT 6.2; Trident/6.0)'
