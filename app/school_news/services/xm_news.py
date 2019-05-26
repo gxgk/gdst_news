@@ -2,7 +2,6 @@ import requests
 import logging
 from app import redis_store
 import pickle
-import ast
 from urllib.parse import quote,unquote
 
 redis_plugin_prefix = 'wechat:plugins:news:xiaomiao'
@@ -30,7 +29,7 @@ def update_cache():
             "type": "xm",
         }
         news_list.append(news_data)
-    redis_store.set(redis_plugin_prefix + ':list', pickle.dumps(news_list), 3600 * 10)
+    redis_store.set(redis_plugin_prefix, pickle.dumps(news_list), 3600 * 10)
     return news_list
 
 
@@ -38,7 +37,7 @@ def get_list(page=1):
     page = int(page)
     if page >= 3:
         return {'end': ''}
-    list_cache = redis_store.get(redis_plugin_prefix + ':list')
+    list_cache = redis_store.get(redis_plugin_prefix)
     if list_cache:
         cache = pickle.dumps(list_cache)
     else:
