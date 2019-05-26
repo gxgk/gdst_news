@@ -24,7 +24,7 @@ def new_cache(storage_type, *args, **kwargs):
                     key = args_data[2]
                     # page
                 else:
-                    key = "%s_%d" % (args_data[1], args_data[2])
+                    key = "%s_%s" % (args_data[1], args_data[2])
                     # faculty_page
                 data = redis_store.hget(name, key)
 

@@ -149,6 +149,11 @@ def get_headline(faculty, page=1):
                 news_list.append(content)
 
     news_list.sort(key=lambda element: element['time'], reverse=True)
-    xm_news = xm.xm_news_list(page)
-    news_list = xm_news + news_list
+    if page == '1':
+        xm_news = xm.get_list()
+        if xm_news:
+            xm_news.reverse()
+            for data in xm_news:
+                if data:
+                    news_list.insert(0, data)
     return news_list
