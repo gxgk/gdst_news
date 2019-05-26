@@ -9,7 +9,6 @@ NEWS_TYPE = {
     '机电工程系': 'jdx/xbxw/xbdt/?page=',
     '艺术系': 'ysx/xbxw/xbdt/?page=',
     '财经系': 'cjx/xbxw/xbdt/?page='
-    'xm':''
 }
 ORIGIN_TYPE = ['xy', 'xb', 'jw']
 LIST_URL = 'http://127.0.0.1:5000/news/list'
