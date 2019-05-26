@@ -1,7 +1,7 @@
 from flask import request
 import json
 from app.school_news import school_news
-from app.school_news import xm_news
+from app.school_news.services import xm_news
 from urllib.parse import unquote
 from . import school_news_mod
 
