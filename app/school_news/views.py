@@ -12,7 +12,6 @@ def get_list_api():
     page = request.args.get('page')
     faculty = request.args.get('faculty')
     faculty = unquote(faculty)
-    gzh_name = request.args.get('gzh_name')
     force_reload = request.args.get('force_reload', 0, type=int)
     # 获取新闻或通告列表
     if news_type not in ['all', 'xm']:
