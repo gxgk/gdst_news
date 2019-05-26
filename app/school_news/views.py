@@ -24,7 +24,7 @@ def get_list_api():
                 'data': ''
             })
         else:
-            list = xm_news.get_list()
+            list = xm_news.get_list(page, bool(force_reload))
     else:
         list = school_news.get_headline(faculty, page)
 

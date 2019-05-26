@@ -8,16 +8,14 @@ redis_plugin_prefix = 'wechat:plugins:news:xiaomiao'
 
 
 def update_cache():
-    url = 'http://mp.weixin.qq.com/mp/homepage' \
-        '?__biz=MzI1MzA1MzQ0MA==&hid=3' \
-        '&sn=2058fc67f54c5b913396dab4db8149ff&begin=0&count=29&action=appmsg_list&f=json'
+    url = 'http://mp.weixin.qq.com/mp/homepage?__biz=MzI1MzA1MzQ0MA==&hid=3&sn=2058fc67f54c5b913396dab4db8149ff&begin=0&count=29&action=appmsg_list&f=json'
     headers = {
         'User-Agent': 'Mozilla/5.0 (compatible; MSIE 10.0; ' +
         'Windows NT 6.2; Trident/6.0)'
     }
     try:
         res = requests.get(url, timeout=6, headers=headers)
-        appmsg_list = res.json()['appmsg_list']
+        appmsg_list = res.json()['data']['homepage_render']['appmsg_list']
     except Exception as e:
         logging.warning(u'连接超时出错：%s' % e)
         return {}
@@ -26,6 +24,7 @@ def update_cache():
         news_data = {
             "title": appmsg['title'],
             "url": quote(appmsg['link']),
+            "author": appmsg['author'],
             "type": "xm",
         }
         news_list.append(news_data)
@@ -33,19 +32,13 @@ def update_cache():
     return news_list
 
 
-def get_list(page=1):
-    page = int(page)
-    if page >= 3:
-        return {'end': ''}
+def get_list(page, force_reload=False):
     list_cache = redis_store.get(redis_plugin_prefix)
-    if list_cache:
-        cache = pickle.dumps(list_cache)
+    if list_cache and force_reload is False:
+        cache_list = pickle.loads(list_cache)
     else:
-        cache = update_cache()
-    cache_list = []
-    for i in range(0, len(cache), 10):
-        cache_list.append(cache[i:i + 10])
-    return cache_list[page - 1]
+        cache_list = update_cache()
+    return cache_list
 
 
 def get_detail(url):
