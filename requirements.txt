@@ -17,7 +17,7 @@ redis==3.2.1
 requests==2.21.0
 soupsieve==1.7.1
 urllib3==1.24.2
-Werkzeug==0.14.1
+Werkzeug==0.15.3
 wechatsogou==4.5.4
 sentry-sdk==0.7.10
 blinker
