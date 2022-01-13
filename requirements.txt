@@ -29,12 +29,12 @@ click==7.1.2
     #   flask
 fake-useragent==0.1.11
     # via -r requirements.in
-flask-redis==0.4.0
-    # via -r requirements.in
 flask==1.1.2
     # via
     #   -r requirements.in
     #   flask-redis
+flask-redis==0.4.0
+    # via -r requirements.in
 future==0.18.2
     # via wechatsogou
 gevent==21.1.2
@@ -59,7 +59,7 @@ markupsafe==1.1.1
     # via
     #   -r requirements.in
     #   jinja2
-pillow==8.1.1
+pillow==9.0.0
     # via wechatsogou
 redis==3.5.3
     # via
